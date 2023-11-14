@@ -1,0 +1,115 @@
+/* 메인 css */
+#main {
+    height: 100vh;
+    margin: 0 auto;
+    max-width: 1024px;
+  }
+  
+.bg-video {
+  z-index: -5;
+}
+
+  /* 메인 nav */
+  nav {
+    max-width: 1024px;
+    width: 100%;
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 65px 0 0px 50px;
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 900; 
+  }
+  
+  .title-span {
+    font-size: 1.5rem;
+    font-weight: 900;
+  }
+  
+  /* SNS 아이콘 */
+  
+  .sns-icon-links {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .sns-icon-links li {
+    display: flex;
+    align-items: center;
+    margin-right: 18px;
+  }
+  
+  .sns-icon-links li:last-child {
+    margin-right: 0;
+  }
+  /* sns icon */
+  .sns-icon-links img {
+    width: 36px;
+    cursor: pointer;
+  }
+  
+  /* 로그인 */
+  .login-btn {
+    color: rgb(255, 255, 255);
+    font-size: 1.4rem;
+    font-weight: 800;
+    /* background-color: white; */
+    outline: none;
+    border: none;
+    cursor: pointer;
+    width: 140px;
+    height: 48px;
+    border-radius: 100px;
+  }
+  
+  /* 메인 텍스트 */
+  .main-text-wrapper {
+    padding-top: 4rem;
+    margin-left: 2rem;
+    position: relative;
+    z-index: -1;
+  }
+  
+  .main-text {
+    position: absolute;
+    top: 10.5rem;
+    left: 1rem;
+    width: 60%;
+    color: white;
+    font-weight: 800;
+    font-size: 5.6rem;
+  }
+  
+  /* 여행지 검색하러 가기 */
+  .go-search {
+    position: relative;
+    left: 3.5rem;
+    margin-top: 29.5rem;
+    
+  }
+  
+  .go-search-btn {
+    color: rgb(92, 92, 92);
+    font-size: 1.2rem;
+    font-weight: 800;
+    background-color: white;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    width: 200px;
+    height: 70px;
+    margin-right: 12px;
+    padding: 15px 30px;
+    border-radius: 100px;
+  }
+  
+  /* 하단 스크롤 */
+  .scrollImg {
+    position: fixed;
+    left: 50%;
+    bottom: 3rem;
+    width: 68px;
+    height: 68px;
+  }

@@ -1,0 +1,200 @@
+.greeting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1024px;
+    font-size: 2rem;
+    font-weight: 600;
+    color: rgb(30, 75, 255);
+    text-align: center;
+}
+
+.go-keyword {
+    color: rgb(210, 210, 210);
+}
+
+.go-keyword p {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.select-region {
+    width: 100%;
+    /* position: relative; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 13rem;   
+}
+
+.selected-region {
+    position: absolute;
+    top: 149.5rem;
+}
+
+.select-user-wrapper {
+    width: 100vw;
+    height: 100vh;
+}
+
+.select-user {
+    text-align: center;
+    width: 100vw;
+    max-width: 1024px;
+    margin: auto;
+    padding-top: 10rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.link-title {
+    font-size: 1.4rem;
+}
+
+/* 임시 설정 */
+.region-info {
+    width: 100%;
+    height: 300px;
+}
+
+.select-keyword-btn-div {
+    display: flex;
+    justify-content: space-evenly;
+    width: 40%;
+    height: 70px;
+    position: relative;
+}
+
+.keyword-btn-div {
+    padding-top: 5rem;
+    display: flex;
+    justify-content: space-evenly;
+    width: 45%;
+}
+
+/* 키워드 검색창 */
+.search-bar-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding-top : 0rem;
+}
+
+.search-bar-container {
+    background-color: white;
+    width: 45rem;
+    height: 3.5rem;
+    border-radius: 2rem;
+    padding: 0 15px;
+    box-shadow: 0px 0px 8px #ddd;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar {
+    background-color: transparent;
+    border: none;
+    width: 100%;
+    height: 100%;
+    font-size: 1.25rem;
+    margin-left: 5px;
+}
+
+.search-bar:focus {
+    outline: none;
+}
+
+#search-icon {
+    color: royalblue;   
+}
+
+.search-results-list {
+    width: 35%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 0px 8px #ddd;
+    border-radius: 10px;
+    margin-top: 1rem;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.search-result {
+    padding: 10px 20px;
+}
+
+.search-result:hover {
+    background-color: #efefef;
+}
+
+
+/* recommand section */
+
+.carousel {
+    padding: 1rem;
+    background-color: white;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+}
+
+.box {
+    background-color: rgb(0, 157, 255);
+    height: 500px;
+}
+
+.box h3 {
+    text-align: center;
+}
+
+.slick-slide div {
+    margin: 0 1rem;
+    border-radius: 0.5rem;
+}
+
+.slick-next {
+    color: lightskyblue;
+    right: -40px !important;
+}
+
+.slick-dots li button:before {
+    /* color: #fff;*/
+    /* font-size: 0.4rem;  */
+    top: 2rem !important;
+}
+
+.recommand-title {
+    padding: 1.5rem;
+    font-size: 1.3rem;
+}
+
+/* 여행지 더보기 */
+.go-more-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+.go-more-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 17rem;
+    background-color: rgb(72, 164, 255);
+    color: white;
+}
+
+.recommand-wrapper { 
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    max-width: 90%;
+    /* padding-right: 2rem;     */
+}
+
+/* 지역 선택  */
+.next-btn-div {
+    padding: 5rem;
+}

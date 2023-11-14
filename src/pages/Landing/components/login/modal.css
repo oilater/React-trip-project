@@ -1,0 +1,33 @@
+.modal-background {
+    width: 100vw;
+    height: 100vh;
+    background: rgba(11,19,30,.37);
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+    z-index: 5;
+}
+
+
+.modal-container {
+    width: 380px;
+    height: 450px;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    color: black;
+    z-index: 10;
+}
+
+.modal-container .title {
+    display: inline-block;
+    text-align: center;
+    margin-top: 10px;
+}

@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  /* overflow-y: hidden; */
+}
+
+video {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  position: absolute;
+  filter: brightness(0.8); /* 0.5는 반반 어둡게 만듭니다. */
+  z-index: -1;
+}
+
+.sub-page {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(0, 0, 2);
+}
+
+.search-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+
