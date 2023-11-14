@@ -144,7 +144,6 @@ const SelectKeyword = () => {
             </div>
           }
         />
-        ;
       </div>
     </AnimatedPage>
   );

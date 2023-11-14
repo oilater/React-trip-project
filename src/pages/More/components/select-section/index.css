@@ -1,0 +1,14 @@
+.select-region-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.region-title {
+    display: flex;
+    align-items: center;
+    font-size: 1.7rem;
+    font-weight: 700;
+    padding-top: 5rem;
+    padding-bottom: 1.5rem;
+}

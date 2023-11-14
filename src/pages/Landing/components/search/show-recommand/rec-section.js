@@ -5,7 +5,7 @@ import { keywordModalState } from "../../../../../atoms/landing";
 import { recommandModalState } from "../../../../../atoms/landing";
 import AnimatedPage from "../../../../../animations/AnimatedPage";
 import "../index.css";
-import { Link } from "react-scroll";
+import { Link } from "react-router-dom";
 
 const contentStyle = {
   height: "600px",
