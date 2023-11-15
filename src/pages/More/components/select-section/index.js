@@ -1,8 +1,9 @@
-import "./index.css";
+import { useState } from "react";
 import { placeListState } from "../../../../atoms/placeList";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { Tabs, Input, Avatar, Card, Button } from "antd";
+import { Tabs, Input, Avatar, Card, Button, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import "./index.css";
 const { Search } = Input;
 const onChange = (key) => {
   console.log(key);
@@ -11,6 +12,7 @@ const onChange = (key) => {
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 const SelectMoreRegion = () => {
   const [place, setPlace] = useRecoilState(placeListState);
+  const [open, setOpen] = useState(false);
 
   const curPlaceData = [
     {
@@ -47,6 +49,10 @@ const SelectMoreRegion = () => {
               width: 430,
               marginTop: 5,
               cursor: "pointer",
+            }}
+            onClick={(e) => {
+              if (e.target.closest(".add-btn") == null) setOpen(true);
+              else setOpen(false);
             }}
           >
             <div className="card">
@@ -138,29 +144,44 @@ const SelectMoreRegion = () => {
   ];
 
   return (
-    <div className="select-region-wrapper">
-      <div className="region-title">서울</div>
-      <div className="region-search-bar">
-        <Search
-          placeholder="장소명을 입력하세요"
-          onSearch={onSearch}
-          style={{
-            width: 430,
-            paddingBottom: 10,
-          }}
-        />
+    <>
+      {/* 모달창 */}
+      <Modal
+        title="서울숲"
+        centered
+        open={open}
+        onOk={() => setOpen(false)}
+        onCancel={() => setOpen(false)}
+        width={1000}
+        bodyStyle={{ height: "600px", overflowY: "auto" }}
+      >
+        <p>서울 숲은 공기가 좋아요 놀러오삼</p>
+      </Modal>
+      {/* 메인 화면 */}
+      <div className="select-region-wrapper">
+        <div className="region-title">서울</div>
+        <div className="region-search-bar">
+          <Search
+            placeholder="장소명을 입력하세요"
+            onSearch={onSearch}
+            style={{
+              width: 430,
+              paddingBottom: 10,
+            }}
+          />
+        </div>
+        <div className="region-tap">
+          <Tabs
+            defaultActiveKey="1"
+            items={items}
+            onChange={onChange}
+            size="large"
+            tabBarGutter={100}
+            tabBarStyle={{ paddingLeft: 50, fontWeight: 600 }}
+          />
+        </div>
       </div>
-      <div className="region-tap">
-        <Tabs
-          defaultActiveKey="1"
-          items={items}
-          onChange={onChange}
-          size="large"
-          tabBarGutter={100}
-          tabBarStyle={{ paddingLeft: 50, fontWeight: 600 }}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

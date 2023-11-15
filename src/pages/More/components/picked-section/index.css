@@ -17,6 +17,10 @@
 }
 
 .reset {
-    color: dodgerblue;
     font-size: 0.9rem;
+}
+
+.reset-btn {
+    color: dodgerblue;
+    border-style: none;
 }
