@@ -18,6 +18,11 @@
   z-index: 2;
 }
 
+#nav a {
+  text-decoration: none;
+  color: rgb(0, 0, 0, 0.5);
+}
+
 #nav span {
   font-size: 0.9rem;
   font-weight: 700;
@@ -45,5 +50,5 @@
 .picked-section {
   width: 50%;
   height: 100%;
-background-color: rgb(255, 249, 238);
+/* background-color: rgb(255, 249, 238); */
 }

@@ -5,7 +5,9 @@ const More = () => {
   return (
     <div id="wrapper">
       <div id="nav">
-        여행<span>의</span>민족
+        <a href="/">
+          여행<span>의</span>민족
+        </a>
       </div>
       <div id="left-section">
         <div className="select-section">
