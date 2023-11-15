@@ -50,5 +50,7 @@
 .picked-section {
   width: 50%;
   height: 100%;
+  color: black;
+  z-index: 2;
 /* background-color: rgb(255, 249, 238); */
 }

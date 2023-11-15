@@ -12,3 +12,34 @@
     padding-top: 5rem;
     padding-bottom: 1.5rem;
 }
+
+.region-tap {
+    width: 90%;
+}
+
+/* 카드 */
+.card {
+    margin-left: 5;
+    display: flex;
+    align-items: center;
+    flex-direction: flex-start;
+}
+
+.card-text-wrapper {
+    padding-left: 2rem;
+}
+
+.card-title {
+    font-weight: 600; 
+    font-size: 1.2rem;
+}
+
+.card-address {
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.45);
+}
+
+.add-btn {
+    position: absolute;
+    right: 1.6rem;
+}

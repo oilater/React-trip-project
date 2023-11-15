@@ -1,6 +1,7 @@
 import "./index.css";
 import KakaoMap from "./components/kakaomaps/Kakaomap";
 import SelectMoreRegion from "./components/select-section";
+import PickedRegion from "./components/picked-section";
 const More = () => {
   return (
     <div id="wrapper">
@@ -13,7 +14,9 @@ const More = () => {
         <div className="select-section">
           <SelectMoreRegion />
         </div>
-        <div className="picked-section"></div>
+        <div className="picked-section">
+          <PickedRegion />
+        </div>
       </div>
       <div id="right-section">
         <KakaoMap />
