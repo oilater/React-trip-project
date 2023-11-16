@@ -12,3 +12,8 @@ export const keywordInputState = atom({
   key: "keywordInputState",
   default: new Set(),
 });
+
+export const pickedRegionState = atom({
+  key: "pickedRegionState",
+  default: [],
+});

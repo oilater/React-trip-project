@@ -2,8 +2,10 @@ import { useState } from "react";
 import { placeListState } from "../../../../atoms/placeList";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { Tabs, Input, Avatar, Card, Button, Modal } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
+import { pickedRegionState } from "../../../../atoms/userInputData";
 import "./index.css";
+
 const { Search } = Input;
 const onChange = (key) => {
   console.log(key);
@@ -13,28 +15,54 @@ const onSearch = (value, _e, info) => console.log(info?.source, value);
 const SelectMoreRegion = () => {
   const [place, setPlace] = useRecoilState(placeListState);
   const [open, setOpen] = useState(false);
+  const setPickedRegion = useSetRecoilState(pickedRegionState);
 
   const curPlaceData = [
     {
       id: 1,
       title: "서울숲",
       address: "서울특별시 강서구",
+      lat: 33.4584,
+      lng: 126.942,
     },
     {
       id: 2,
       title: "멀티캠퍼스",
       address: "서울특별시 강남구 역삼동",
+      lat: 33.3617,
+      lng: 126.5292,
     },
     {
       id: 3,
       title: "일원동",
       address: "서울특별시 강남구 일원동",
+      lat: 33.2456,
+      lng: 126.4108,
     },
   ];
 
+  const moveLocation = (title, address, lat, lng) => {
+    console.log(title, address);
+    const newLocation = {
+      title: title,
+      address: address,
+      lat: lat,
+      lng: lng,
+    };
+    setPickedRegion((prev) => [...prev, newLocation]);
+  };
+
   const handleSelectPlace = (placeData) => {
+    for (const item of place) {
+      if (item.id === placeData.id) {
+        // 해당 원소가 place에 있다면
+        // placeData를 place에서 제거해줘야 함
+        const filteredPlaces = place.filter((v) => v.id !== placeData.id);
+        setPlace(filteredPlaces);
+        return;
+      }
+    }
     setPlace((origin) => [...origin, placeData]);
-    console.log(placeData);
   };
 
   const items = [
@@ -45,6 +73,7 @@ const SelectMoreRegion = () => {
         curPlaceData.map((el) => (
           <Card
             className="antd-card"
+            key={el.id}
             style={{
               width: 430,
               marginTop: 5,
@@ -68,10 +97,23 @@ const SelectMoreRegion = () => {
               <div className="add-btn">
                 <Button
                   type="primary"
-                  icon={<PlusOutlined />}
+                  icon={
+                    place.find((item) => item.id === el.id) ? (
+                      <CheckOutlined />
+                    ) : (
+                      <PlusOutlined />
+                    )
+                  }
                   size="small"
-                  style={{ backgroundColor: "#E0E0E0" }}
-                  onClick={() => handleSelectPlace(el)}
+                  style={
+                    place.find((item) => item.id === el.id)
+                      ? { backgroundColor: "dodgerblue" }
+                      : { backgroundColor: "#E0E0E0" }
+                  }
+                  onClick={() => {
+                    handleSelectPlace(el);
+                    moveLocation(el.title, el.address, el.lat, el.lng);
+                  }}
                 />
               </div>
             </div>

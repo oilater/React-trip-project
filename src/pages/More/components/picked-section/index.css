@@ -10,10 +10,18 @@
 
 
 .title {
+    display: flex;
+    align-items: center;
     font-size: 1.9rem;
     font-weight: 700;
     position: relative;
     top: -0.5rem;
+}
+
+.title span {
+    font-size: 0.9rem;
+    color: rgb(74, 74, 74);
+    padding-left: 1rem;
 }
 
 .reset {
