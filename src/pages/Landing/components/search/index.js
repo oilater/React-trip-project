@@ -7,7 +7,7 @@ const Search = () => {
 
   useEffect(() => {
     const scrollHandler = () => {
-      console.log(window.scrollY);
+      // console.log(window.scrollY);
       if (window.scrollY > 1940) {
         setTimeout(() => {
           setSelectRegion(true);
@@ -24,8 +24,8 @@ const Search = () => {
 
   return (
     <>
-      {/* <SelectByUser /> */}
-      {!showSelectRegion ? <Greeting /> : <SelectByUser />};
+      <SelectByUser />
+      {/* {!showSelectRegion ? <Greeting /> : <SelectByUser />}; */}
     </>
   );
 };

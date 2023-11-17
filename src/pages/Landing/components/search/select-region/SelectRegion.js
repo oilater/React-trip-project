@@ -12,7 +12,7 @@ import AnimatedPage from "../../../../../animations/AnimatedPage";
 const { Option } = Select;
 
 const SelectRegion = () => {
-  const [regionList, setRegionList] = useState([]);
+  const [regionList, setRegionList] = useState([]); // 받아올 지역 정보
   const [selectedKey, setSelectedKey] = useState();
   const setIsRegionModalOpen = useSetRecoilState(regionModalState);
   const setIsKeywordModalOpen = useSetRecoilState(keywordModalState);
@@ -28,39 +28,20 @@ const SelectRegion = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Axios를 사용하여 데이터를 가져옵니다.
-        const response = await axios.get("https://api.example.com/data");
-        // 가져온 데이터를 state에 저장합니다.
+        const response = await axios.get("http://localhost/api/cities");
         setRegionList(response.data);
       } catch (error) {
-        const response = [
-          {
-            key: "01",
-            value: "서울",
-          },
-          {
-            key: "02",
-            value: "대전",
-          },
-          {
-            key: "03",
-            value: "부산",
-          },
-        ];
-
         console.error("Error fetching data:", error);
-        setRegionList(response);
       }
     };
 
-    // 컴포넌트가 마운트될 때 데이터를 가져옵니다.
-    fetchData();
+    fetchData(); // Call the async function inside the effect
   }, []);
-
   const handleChange = (obj) => {
-    const selected = regionList.find((item) => item.value === obj);
-    // console.log(`selected ${obj.key} ${obj.value}`);
-    setRegionData({ key: selected.key, value: selected.value });
+    console.log(obj);
+    const selected = regionList.find((el) => el.code === Number(obj));
+    console.log(selected);
+    setRegionData({ code: selected.code, name: selected.name });
   };
   return (
     <AnimatedPage>
@@ -73,12 +54,12 @@ const SelectRegion = () => {
               height: 40,
               textAlign: "center",
             }}
-            onChange={handleChange}
             value={selectedKey}
+            onChange={handleChange}
           >
-            {regionList.map(({ key, value }) => (
-              <Option key={key} value={value}>
-                {value}
+            {regionList.map(({ code, name }) => (
+              <Option key={code} code={code} name={name}>
+                {name}
               </Option>
             ))}
           </Select>

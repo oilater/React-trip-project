@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { AutoComplete, Button, FloatButton, Tag } from "antd";
 import { SwapLeftOutlined, SwapRightOutlined } from "@ant-design/icons";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -8,27 +10,14 @@ import AnimatedPage from "../../../../../animations/AnimatedPage";
 // 키워드 recoil import
 import { keywordInputState } from "../../../../../atoms/userInputData";
 
-const options = [
-  {
-    value: "밤바다",
-  },
-  {
-    value: "별",
-  },
-  {
-    value: "카페",
-  },
-  {
-    value: "가족",
-  },
-];
-
 const SelectKeyword = () => {
   const setIsRegionModalOpen = useSetRecoilState(regionModalState);
   const setIsKeywordModalOpen = useSetRecoilState(keywordModalState);
   const setIsRecommandModalOpen = useSetRecoilState(recommandModalState);
 
   const [userKeyword, setUserKeyword] = useRecoilState(keywordInputState); // keyword recoil state
+
+  const [allKeywords, setAllKeywords] = useState([]);
 
   // 사용자가 입력할 때마다 키워드 값을 세팅
   // userKeyword default 값은 new Set() -> 키워드 중복 방지
@@ -58,6 +47,23 @@ const SelectKeyword = () => {
     setIsKeywordModalOpen(false);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost/api/keywords");
+        setAllKeywords(() => response.data); // 받아온 모든 키워드 useState로 저장
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // 확인용
+  useEffect(() => {
+    console.log(allKeywords);
+  }, [allKeywords]);
+
   return (
     <AnimatedPage>
       <div className="select-region">
@@ -68,11 +74,14 @@ const SelectKeyword = () => {
               key={el}
               bordered={false}
               color={
-                el === "별"
+                el === "산" || el === "절" || el === "고적지"
                   ? "processing"
-                  : el === "밤바다"
+                  : el === "별" || el === "공원" || el === "도시"
                   ? "success"
-                  : el === "카페"
+                  : el === "계곡" ||
+                    el === "해수욕장" ||
+                    el === "연못" ||
+                    el === "섬"
                   ? "error"
                   : "warning"
               }
@@ -81,16 +90,6 @@ const SelectKeyword = () => {
               {el}
             </Tag>
           ))}
-          {/* 
-          <Tag bordered={false} color="success">
-            별
-          </Tag>
-          <Tag bordered={false} color="error">
-            카페
-          </Tag>
-          <Tag bordered={false} color="warning">
-            가족여행
-          </Tag> */}
         </div>
         <div className="search-bar-section">
           <AutoComplete
@@ -99,12 +98,11 @@ const SelectKeyword = () => {
               height: 40,
               textAlign: "center",
             }}
-            options={options}
+            options={allKeywords.map((item) => ({
+              value: item.keyword,
+              code: item.code,
+            }))}
             placeholder="여행 키워드를 입력해주세요"
-            filterOption={(inputValue, option) =>
-              option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
-              -1
-            }
             onSelect={handleUserSelect}
           />
         </div>
@@ -137,10 +135,9 @@ const SelectKeyword = () => {
         <FloatButton
           tooltip={
             <div className="hot-keyword-description">
-              <p>바다</p>
-              <p>별</p>
-              <p>카페</p>
-              <p>버스킹</p>
+              {allKeywords.map((v) => (
+                <p>{v.keyword}</p>
+              ))}
             </div>
           }
         />

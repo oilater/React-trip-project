@@ -3,8 +3,8 @@ import { atom } from "recoil";
 export const regionInputState = atom({
   key: "regionInputState",
   default: {
-    key: "",
-    value: "",
+    code: "",
+    name: "",
   },
 });
 
