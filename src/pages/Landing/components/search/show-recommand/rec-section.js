@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "antd";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -11,6 +11,8 @@ import { Link } from "react-router-dom";
 import { regionInputState } from "../../../../../atoms/userInputData";
 import { keywordInputState } from "../../../../../atoms/userInputData";
 import { recommandListState } from "../../../../../atoms/recommandData";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
 
 const Recommand = () => {
   const setIsRegionModalOpen = useSetRecoilState(regionModalState);
@@ -19,7 +21,7 @@ const Recommand = () => {
 
   // 서버로부터 받아올 추천 여행지 목록을 넣어줄 리스트 recoilState
   const [recommandList, setRecommandList] = useRecoilState(recommandListState);
-
+  const [currentIndex, setCurrentIndex] = useState();
   const handleKeywordModal = () => {
     setIsKeywordModalOpen(true);
     setIsRegionModalOpen(false);
@@ -49,12 +51,43 @@ const Recommand = () => {
     console.log(recommandList);
   }, [recommandList]);
 
+  const renderSlides = recommandList.map((v) => (
+    <div className="slider-wrapper" key={v.id}>
+      <div className="rec-info">
+        <p className="rec-address">{v.address}</p>
+        <p className="rec-title">{v.title}</p>
+        <p className="rec-overview">{v.overview}</p>
+      </div>
+      <div className="rec-image">
+        <img src={v.mainImagePath} alt="추천 여행지 이미지" />
+      </div>
+    </div>
+  ));
+
+  function handleChange(index) {
+    setCurrentIndex(index);
+  }
+
   return (
     <>
       <AnimatedPage>
         <div className="recommand-wrapper">
           <div className="recommand-title"></div>
-          <div className="container"></div>
+          <div className="container">
+            <Carousel
+              className="carousel"
+              showArrows={false}
+              autoPlay={true}
+              interval={3000}
+              infiniteLoop={true}
+              selectedItem={recommandList[currentIndex]}
+              onChange={handleChange}
+              stopOnHover={true}
+              width={1400}
+            >
+              {renderSlides}
+            </Carousel>
+          </div>
         </div>
       </AnimatedPage>
       <div className="go-more-section">

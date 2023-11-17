@@ -133,7 +133,7 @@
 
 /* recommand section */
 .recommand-title {
-    padding: 1.5rem;
+    padding: 3rem;
     font-size: 1.3rem;
 }
 
@@ -189,6 +189,7 @@
     display: flex;
     flex-direction: column;
     max-width: 90%;
+    cursor: pointer;
     /* padding-right: 2rem;     */
 }
 
@@ -199,3 +200,49 @@
 
 
 /* 슬라이더 */
+.container {
+    margin: 0 auto;
+}
+.slider-wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.rec-info {
+    width: 50%;
+    text-align: left;
+}
+
+.rec-image {
+    width: 45%;
+    padding-bottom: 3rem;
+}
+
+.rec-image img {
+    border-radius: 0.5rem;
+}
+
+.rec-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    padding-bottom: 2.5rem;
+
+}
+
+
+.rec-address {
+    color: rgb(48, 151, 255);
+    font-size: 1.1rem;
+    padding-bottom: 0.6rem;
+}
+
+.rec-overview {
+    font-size: 1.1rem;
+    text-align: left;
+    color: rgb(70, 70, 70);
+}
+
+.carousel .thumb {
+    width: 5%;
+    height: 50px;
+}
