@@ -32,3 +32,7 @@
     color: dodgerblue;
     border-style: none;
 }
+
+.wrap {
+    position: relative;
+}

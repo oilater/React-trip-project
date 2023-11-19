@@ -1,9 +1,10 @@
-import "./index.css";
-import { Avatar, Card, Button } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { placeListState } from "../../../../atoms/placeList";
 import { pickedRegionState } from "../../../../atoms/userInputData";
+
+import { Avatar, Card, Button } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
+import "./index.css";
 const PickedRegion = () => {
   const [placeList, setPlaceList] = useRecoilState(placeListState);
   const setPickedRegion = useSetRecoilState(pickedRegionState);

@@ -43,7 +43,7 @@ const SelectByUser = () => {
           style={isRecommandModalOpen ? activeStyle : {}}
         >
           <p>Step 3</p>
-          <h3 className="link-title">여행지 추천 받기</h3>
+          <h3 className="link-title">추천 여행지 고르기</h3>
         </div>
       </div>
       <AnimatePresence mode="wait">

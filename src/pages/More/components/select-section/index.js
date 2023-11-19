@@ -1,9 +1,18 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { placeListState } from "../../../../atoms/placeList";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { pickedRegionState } from "../../../../atoms/userInputData";
+import { pickedPlacesState } from "../../../../atoms/pickedPlaceList";
+import { regionInputState } from "../../../../atoms/userInputData";
+// 내가 찜한 명소, 식당, 숙소 저장할 곳
+import { attractionListState } from "../../../../atoms/recommandData";
+import { restaurantListState } from "../../../../atoms/recommandData";
+import { accomodationListState } from "../../../../atoms/recommandData";
+
 import { Tabs, Input, Avatar, Card, Button, Modal } from "antd";
 import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
-import { pickedRegionState } from "../../../../atoms/userInputData";
+
 import "./index.css";
 
 const { Search } = Input;
@@ -13,33 +22,46 @@ const onChange = (key) => {
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 const SelectMoreRegion = () => {
+  const [open, setOpen] = useState(false); // 모달창 상태
   const [place, setPlace] = useRecoilState(placeListState);
-  const [open, setOpen] = useState(false);
   const setPickedRegion = useSetRecoilState(pickedRegionState);
+  const [pickedPlaces, setPickedPlaces] = useRecoilState(pickedPlacesState); // 추천 받은 여행지 중 유저가 고른 여행지 목록
+  const curRegion = useRecoilValue(regionInputState); // 현재 지역 {코드, 지역명}
+  const [attractionList, setAttractionList] = useState([]); // 비동기로 받을 현재 지역의 여행지 목록
+  const [restaurantList, setRestaurantList] = useState([]); // 비동기로 받을 현재 지역의 음식점 목록
+  const [accomodationList, setAccomodationList] = useState([]); // 비동기로 받을 현재 지역의 숙소 목록
 
-  const curPlaceData = [
-    {
-      id: 1,
-      title: "서울숲",
-      address: "서울특별시 강서구",
-      lat: 33.4584,
-      lng: 126.942,
-    },
-    {
-      id: 2,
-      title: "멀티캠퍼스",
-      address: "서울특별시 강남구 역삼동",
-      lat: 33.3617,
-      lng: 126.5292,
-    },
-    {
-      id: 3,
-      title: "일원동",
-      address: "서울특별시 강남구 일원동",
-      lat: 33.2456,
-      lng: 126.4108,
-    },
-  ];
+  const pickedPlacesArr = Array.from(pickedPlaces); // Set -> 배열 변환
+
+  // axios로 데이터 받아오기
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseAttraction = await axios.get(
+          `http://localhost/api/map/attractions?&type=1&page=0&cityCode=${curRegion.code}&exceptId=1`
+        );
+
+        const responseRestaurant = await axios.get(
+          `http://localhost/api/map/attractions?&type=2&page=0&cityCode=${curRegion.code}&exceptId=1`
+        );
+
+        const responseAccomodation = await axios.get(
+          `http://localhost/api/map/attractions?&type=3&page=0&cityCode=${curRegion.code}&exceptId=1`
+        );
+
+        setAttractionList(responseAttraction.data);
+        setRestaurantList(responseRestaurant.data);
+        setAccomodationList(responseAccomodation.data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log("지역 내의 여행지 정보들을 받아옵니다", attractionList);
+  }, [attractionList]);
 
   const moveLocation = (title, address, lat, lng) => {
     console.log(title, address);
@@ -55,8 +77,7 @@ const SelectMoreRegion = () => {
   const handleSelectPlace = (placeData) => {
     for (const item of place) {
       if (item.id === placeData.id) {
-        // 해당 원소가 place에 있다면
-        // placeData를 place에서 제거해줘야 함
+        // 해당 원소가 place에 있다면 placeData를 place에서 제거해줘야 함
         const filteredPlaces = place.filter((v) => v.id !== placeData.id);
         setPlace(filteredPlaces);
         return;
@@ -70,7 +91,58 @@ const SelectMoreRegion = () => {
       key: "1",
       label: "관광지",
       children: [
-        curPlaceData.map((el) => (
+        // 먼저 사용자가 PICK한 여행지들이 상단에 뜨도록 함
+        pickedPlacesArr.map((el) => (
+          <Card
+            className="antd-card"
+            key={el.id}
+            style={{
+              width: 430,
+              marginTop: 5,
+              cursor: "pointer",
+            }}
+            onClick={(e) => {
+              if (e.target.closest(".add-btn") == null) setOpen(true);
+              else setOpen(false);
+            }}
+          >
+            <div className="card">
+              <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=1" />
+              <div className="card-text-wrapper">
+                <div id="title" className="card-title">
+                  {el.title}
+                </div>
+                <div id="address" className="card-address">
+                  {el.address}
+                </div>
+              </div>
+              <div className="add-btn">
+                <Button
+                  type="primary"
+                  icon={
+                    place.find((item) => item.id === el.id) ? (
+                      <CheckOutlined />
+                    ) : (
+                      <PlusOutlined />
+                    )
+                  }
+                  size="small"
+                  style={
+                    place.find((item) => item.id === el.id)
+                      ? { backgroundColor: "dodgerblue" }
+                      : { backgroundColor: "#E0E0E0" }
+                  }
+                  onClick={() => {
+                    handleSelectPlace(el);
+                    moveLocation(el.title, el.address, el.lat, el.lng);
+                  }}
+                />
+              </div>
+            </div>
+          </Card>
+        )),
+        // 이제 DB에서 넘어온 해당 지역 관광지들 정보 리스트화
+        attractionList.map((el) => (
           <Card
             className="antd-card"
             key={el.id}
@@ -121,67 +193,112 @@ const SelectMoreRegion = () => {
         )),
       ],
     },
+    // 식당 section
     {
       key: "2",
       label: "식당",
-      children: (
+      children: restaurantList.map((el) => (
         <Card
-          className="atnd-card"
+          className="antd-card"
+          key={el.id}
           style={{
             width: 430,
             marginTop: 5,
             cursor: "pointer",
           }}
+          onClick={(e) => {
+            if (e.target.closest(".add-btn") == null) setOpen(true);
+            else setOpen(false);
+          }}
         >
           <div className="card">
             <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=1" />
             <div className="card-text-wrapper">
-              <div className="card-title">타워팰리스</div>
-              <div className="card-address">서울특별시 강남구</div>
+              <div id="title" className="card-title">
+                {el.title}
+              </div>
+              <div id="address" className="card-address">
+                {el.address}
+              </div>
             </div>
             <div className="add-btn">
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={
+                  place.find((item) => item.id === el.id) ? (
+                    <CheckOutlined />
+                  ) : (
+                    <PlusOutlined />
+                  )
+                }
                 size="small"
-                style={{ backgroundColor: "#E0E0E0" }}
-                onClick={handleSelectPlace}
+                style={
+                  place.find((item) => item.id === el.id)
+                    ? { backgroundColor: "dodgerblue" }
+                    : { backgroundColor: "#E0E0E0" }
+                }
+                onClick={() => {
+                  handleSelectPlace(el);
+                  moveLocation(el.title, el.address, el.lat, el.lng);
+                }}
               />
             </div>
           </div>
         </Card>
-      ),
+      )),
     },
     {
       key: "3",
       label: "숙소",
-      children: (
+      children: accomodationList.map((el) => (
         <Card
           className="antd-card"
+          key={el.id}
           style={{
             width: 430,
             marginTop: 5,
             cursor: "pointer",
           }}
+          onClick={(e) => {
+            if (e.target.closest(".add-btn") == null) setOpen(true);
+            else setOpen(false);
+          }}
         >
           <div className="card">
             <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=1" />
             <div className="card-text-wrapper">
-              <div className="card-title">서울숲</div>
-              <div className="card-address">서울특별시 강서구</div>
+              <div id="title" className="card-title">
+                {el.title}
+              </div>
+              <div id="address" className="card-address">
+                {el.address}
+              </div>
             </div>
             <div className="add-btn">
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={
+                  place.find((item) => item.id === el.id) ? (
+                    <CheckOutlined />
+                  ) : (
+                    <PlusOutlined />
+                  )
+                }
                 size="small"
-                style={{ backgroundColor: "#E0E0E0" }}
-                onClick={handleSelectPlace}
+                style={
+                  place.find((item) => item.id === el.id)
+                    ? { backgroundColor: "dodgerblue" }
+                    : { backgroundColor: "#E0E0E0" }
+                }
+                onClick={() => {
+                  handleSelectPlace(el);
+                  moveLocation(el.title, el.address, el.lat, el.lng);
+                }}
               />
             </div>
           </div>
         </Card>
-      ),
+      )),
     },
   ];
 
@@ -201,7 +318,7 @@ const SelectMoreRegion = () => {
       </Modal>
       {/* 메인 화면 */}
       <div className="select-region-wrapper">
-        <div className="region-title">서울</div>
+        <div className="region-title">{curRegion.name}</div>
         <div className="region-search-bar">
           <Search
             placeholder="장소명을 입력하세요"

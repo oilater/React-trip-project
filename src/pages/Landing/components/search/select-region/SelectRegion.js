@@ -3,12 +3,13 @@ import { SwapRightOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "../index.css";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { recommandModalState } from "../../../../../atoms/landing";
 import { regionModalState } from "../../../../../atoms/landing";
 import { keywordModalState } from "../../../../../atoms/landing";
 import { regionInputState } from "../../../../../atoms/userInputData";
 import AnimatedPage from "../../../../../animations/AnimatedPage";
+import { pickedPlacesState } from "../../../../../atoms/pickedPlaceList";
 const { Option } = Select;
 
 const SelectRegion = () => {
@@ -18,7 +19,9 @@ const SelectRegion = () => {
   const setIsKeywordModalOpen = useSetRecoilState(keywordModalState);
   const setIsRecommandModalOpen = useSetRecoilState(recommandModalState);
 
-  const setRegionData = useSetRecoilState(regionInputState);
+  const [regionData, setRegionData] = useRecoilState(regionInputState);
+
+  const setPickedPlaces = useSetRecoilState(pickedPlacesState);
 
   const handleKeywordModal = () => {
     setIsKeywordModalOpen(true);
@@ -34,9 +37,15 @@ const SelectRegion = () => {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData(); // Call the async function inside the effect
   }, []);
+
+  // 유저가 선택한 지역이 바뀐다면 pickedPlaces 초기화
+  useEffect(() => {
+    setPickedPlaces(() => new Set());
+    console.log("set 초기화 : 컴포넌트 시작될때는 안하겠지?");
+  }, [regionData]);
+
   const handleChange = (obj) => {
     console.log(obj);
     const selected = regionList.find((el) => el.code === Number(obj));

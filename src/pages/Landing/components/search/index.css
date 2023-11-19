@@ -173,7 +173,7 @@
 .go-more-section {
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
+    padding-top: 3rem;
 }
 .go-more-btn {
     display: flex;
@@ -189,7 +189,7 @@
     display: flex;
     flex-direction: column;
     max-width: 90%;
-    cursor: pointer;
+    
     /* padding-right: 2rem;     */
 }
 
@@ -242,7 +242,135 @@
     color: rgb(70, 70, 70);
 }
 
-.carousel .thumb {
+/* .carousel .thumb {
     width: 5%;
     height: 50px;
+} */
+
+/* 3d slider */
+
+/* body {
+  font-size: 1.6rem;
+  background: var(--bg);
+} */
+
+.container {
+  max-width: 85rem;
+  padding: 0rem 0rem;
+  margin: 0 auto;
+}
+
+.swiper_container {
+  height: 33rem;
+  padding: 1rem 0;
+  position: relative;
+}
+
+.swiper-slide {
+  padding-left: 1.8rem;
+  width: 37rem;
+  height: 40rem;
+  position: relative;
+}
+
+
+.swiper-slide img {
+  width: 25rem;
+  height: 30rem;
+  border-radius: 2rem;
+  object-fit: cover;
+}
+
+.swiper-slide-shadow-left,
+.swiper-slide-shadow-right {
+  display: none;
+}
+
+.slider-controller {
+  position: relative;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slider-controller .swiper-button-next {
+  left: 58% !important;
+  transform: translateX(-58%) !important;
+}
+
+.slider-controller .slider-arrow {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  left: 42%;
+  transform: translateX(-40%);
+}
+
+.slider-controller .slider-arrow ion-icon {
+  font-size: 3rem;
+  color: rgb(112, 112, 112);
+}
+
+.slider-controller .slider-arrow::after {
+  content: '';
+}
+
+.swiper-pagination {
+  position: absolute;
+  width: 100%;
+  bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-pagination .swiper-pagination-bullet {
+  filter: drop-shadow(0px 8px 24px rgba(136, 136, 136, 0.1));
+}
+
+.swiper-pagination .swiper-pagination-bullet-active {
+  background-color: dodgerblue;
+}
+
+/* 슬라이드 inner */
+.img-wrapper {
+    position: relative;
+    color: rgb(93, 93, 93);
+}
+
+.img-info-section {
+    position: absolute;
+    background-color: rgb(250, 250, 250);
+    border-bottom-left-radius: 2rem;
+    border-bottom-right-radius: 2rem;
+    width: 400px;
+    height: 15%;
+    bottom: 0.3rem;
+}
+
+.img-wrapper p.title {
+    left: 2rem;
+    top: 0.7rem;
+    font-size: 1.35rem;
+}
+
+.img-wrapper p.address {
+    position: absolute;    
+    left: 2rem;
+    top: 2.5rem;
+    font-size: 0.95rem;
+    color: rgb(154, 154, 154);
+}
+
+/* 모달창 */
+
+
+
+.content-style {
+height: 380px;
+color: #fff;
+line-height: 160px;
+text-align: center;
+margin: 0 auto;
 }

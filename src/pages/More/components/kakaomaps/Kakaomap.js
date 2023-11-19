@@ -7,7 +7,9 @@ const KakaoMap = () => {
   const [curCenter, setCurCenter] = useState([
     33.45172321560444, 126.5665260371922,
   ]);
-  const pickedRegion = useRecoilValue(pickedRegionState);
+
+  const pickedRegion = useRecoilValue(pickedRegionState); // 유저가 선택한 장소 (명소, 음식점, 숙소)
+
   useEffect(() => {
     const mapContainer = document.getElementById("map"), // 지도를 표시할 div
       mapOption = {
@@ -16,30 +18,30 @@ const KakaoMap = () => {
       };
 
     const map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
     // 마커를 표시할 위치와 title 객체 배열입니다
     const positions = pickedRegion.map((el) => {
       return {
-        title: el.title,
-        latlng: new kakao.maps.LatLng(Number(el.lat), Number(el.lng)),
+        title: el.title, // 장소 이름
+        latlng: new kakao.maps.LatLng(Number(el.lat), Number(el.lng)), // 위치 정보(위도, 경도)
       };
     });
 
     // 이벤트
     kakao.maps.event.addListener(map, "zoom_changed", function () {
       // 지도의 현재 레벨을 얻어옵니다
-      let level = map.getLevel();
-      setCurLevel(() => level);
-      console.log("현재 지도 레벨은 " + level + " 입니다");
+      let level = map.getLevel(); // 현재 줌한 레벨
+      setCurLevel(() => level); // 현재 줌 레벨을 저장
     });
 
     // 마커 이미지의 이미지 주소입니다
     const imageSrc =
       "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
 
-    for (var i = 0; i < positions.length; i++) {
-      // 마커 이미지의 이미지 크기 입니다
-      const imageSize = new kakao.maps.Size(30, 42);
+    // 마커 이미지의 이미지 크기 입니다
+    const imageSize = new kakao.maps.Size(30, 42);
 
+    for (var i = 0; i < positions.length; i++) {
       // 마커 이미지를 생성합니다
       const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
 
@@ -58,7 +60,7 @@ const KakaoMap = () => {
   }, [pickedRegion]);
 
   return (
-    <div id="map" style={{ width: "100%", height: "100%", zIndex: 5 }}></div>
+    <div id="map" style={{ width: "100%", height: "100%", zIndex: 15 }}></div>
   );
 };
 

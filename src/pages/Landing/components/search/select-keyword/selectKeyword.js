@@ -22,16 +22,21 @@ const SelectKeyword = () => {
   // 사용자가 입력할 때마다 키워드 값을 세팅
   // userKeyword default 값은 new Set() -> 키워드 중복 방지
   // 선택을 완료했다면 화면 상의 value 값 초기화 하기
-  const handleUserSelect = (val) => {
-    setUserKeyword((prev) => new Set([...prev, val]));
-    console.log(val);
+  const handleUserSelect = (value, option) => {
+    // setUserKeyword((prev) => new Set([...prev, keyword]));
+    setUserKeyword((prev) => new Set([...prev, option]));
   };
 
   // keyword onClick 시 삭제
-  const handleDeleteKeyword = (e) => {
+  const handleDeleteKeyword = (code) => {
     setUserKeyword((prev) => {
-      prev.delete(e.target.textContent);
-      return new Set(prev);
+      const updatedSet = new Set(prev);
+      updatedSet.forEach((el) => {
+        if (el.code === code) {
+          updatedSet.delete(el);
+        }
+      });
+      return updatedSet;
     });
   };
 
@@ -53,16 +58,20 @@ const SelectKeyword = () => {
         const response = await axios.get("http://localhost/api/keywords");
         setAllKeywords(() => response.data); // 받아온 모든 키워드 useState로 저장
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data: ", error);
       }
     };
     fetchData();
   }, []);
 
-  // 확인용
-  useEffect(() => {
-    console.log(allKeywords);
-  }, [allKeywords]);
+  // // 확인용
+  // useEffect(() => {
+  //   console.log(allKeywords);
+  // }, [allKeywords]);
+
+  // useEffect(() => {
+  //   Array.from(userKeyword).forEach((v) => console.log(v));
+  // }, [userKeyword]);
 
   return (
     <AnimatedPage>
@@ -71,23 +80,25 @@ const SelectKeyword = () => {
           {Array.from(userKeyword).map((el) => (
             <Tag
               style={{ cursor: "pointer" }}
-              key={el}
+              key={el.code}
               bordered={false}
               color={
-                el === "산" || el === "절" || el === "고적지"
+                el.value === "산" || el.value === "절" || el.value === "고적지"
                   ? "processing"
-                  : el === "별" || el === "공원" || el === "도시"
+                  : el.value === "별" ||
+                    el.value === "공원" ||
+                    el.value === "도시"
                   ? "success"
-                  : el === "계곡" ||
-                    el === "해수욕장" ||
-                    el === "연못" ||
-                    el === "섬"
+                  : el.value === "계곡" ||
+                    el.value === "해수욕장" ||
+                    el.value === "연못" ||
+                    el.value === "섬"
                   ? "error"
                   : "warning"
               }
-              onClick={handleDeleteKeyword}
+              onClick={() => handleDeleteKeyword(el.code)}
             >
-              {el}
+              {el.value}
             </Tag>
           ))}
         </div>
@@ -102,7 +113,7 @@ const SelectKeyword = () => {
               value: item.keyword,
               code: item.code,
             }))}
-            placeholder="여행 키워드를 입력해주세요"
+            placeholder="어떤 여행을 떠나고 싶나요?"
             onSelect={handleUserSelect}
           />
         </div>
@@ -133,13 +144,17 @@ const SelectKeyword = () => {
           </div>
         </div>
         <FloatButton
+          description="HELP"
           tooltip={
-            <div className="hot-keyword-description">
+            <div>
+              <h3>이번 주 인기 키워드</h3>
+              <br />
               {allKeywords.map((v) => (
-                <p>{v.keyword}</p>
+                <span>{v.keyword} </span>
               ))}
             </div>
           }
+          style={{ top: 35, width: 45, height: 45, right: 65 }}
         />
       </div>
     </AnimatedPage>
