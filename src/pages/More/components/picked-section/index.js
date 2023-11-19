@@ -1,13 +1,20 @@
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { placeListState } from "../../../../atoms/placeList";
 import { pickedRegionState } from "../../../../atoms/userInputData";
-
+import { curCenterState } from "../../../../atoms/map";
+import { curLevelState } from "../../../../atoms/map";
 import { Avatar, Card, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import "./index.css";
+import { getKakaoMap } from "../kakaomaps/initializeMap";
+const { kakao } = window;
 const PickedRegion = () => {
   const [placeList, setPlaceList] = useRecoilState(placeListState);
-  const setPickedRegion = useSetRecoilState(pickedRegionState);
+  const setCurLevel = useSetRecoilState(curLevelState);
+  const setCurCenter = useSetRecoilState(curCenterState);
+  const [pickedRegion, setPickedRegion] = useRecoilState(pickedRegionState);
+
+  const kakaoMap = getKakaoMap();
 
   const moveLocation = (title, address, lat, lng) => {
     console.log(title, address, lat, lng);
@@ -17,16 +24,33 @@ const PickedRegion = () => {
       latitude: lat,
       longitude: lng,
     };
-    setPickedRegion((prev) => [...prev, newLocation]);
+    if (pickedRegion.find((v) => v.title === title)) {
+      setCurCenter([lat, lng]);
+      setCurLevel(6);
+    } else {
+      setPickedRegion((prev) => [...prev, newLocation]);
+      setCurCenter([lat, lng]);
+      setCurLevel(6);
+    }
   };
 
-  const handleDeletePlace = (val) => {
-    const filteredPlaces = [];
-    for (const p of placeList) {
-      if (p.id !== val) filteredPlaces.push(p);
-    }
+  // // 배열에 추가된 마커들을 지도에 표시하거나 삭제하는 함수입니다
+  // const setMarkers = () => {
+  //   const markers = kakao.maps.Marker();
+  //   console.log(markers);
+  //   for (var i = 0; i < markers.length; i++) {
+  //     markers[i].setMap(kakaoMap);
+  //   }
+  // };
 
-    setPlaceList(filteredPlaces);
+  const handleDeletePlace = (val) => {
+    const updatePlace = placeList.filter((place) => place.id !== val);
+    // const filteredPlaces = [];
+    // for (const p of placeList) {
+    //   if (p.id !== val) filteredPlaces.push(p);
+    // }
+
+    setPlaceList(updatePlace);
   };
 
   const resetPlaceList = () => {

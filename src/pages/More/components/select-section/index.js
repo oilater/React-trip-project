@@ -24,7 +24,7 @@ const onSearch = (value, _e, info) => console.log(info?.source, value);
 const SelectMoreRegion = () => {
   const [open, setOpen] = useState(false); // 모달창 상태
   const [place, setPlace] = useRecoilState(placeListState);
-  const setPickedRegion = useSetRecoilState(pickedRegionState);
+  const [pickedRegion, setPickedRegion] = useRecoilState(pickedRegionState);
   const pickedPlaces = useRecoilValue(pickedPlacesState); // 추천 받은 여행지 중 유저가 고른 여행지 목록
   const curRegion = useRecoilValue(regionInputState); // 현재 지역 {코드, 지역명}
   const [attractionList, setAttractionList] = useState([]); // 비동기로 받을 현재 지역의 여행지 목록
@@ -57,7 +57,7 @@ const SelectMoreRegion = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [curRegion.code]);
 
   useEffect(() => {
     console.log("지역 내의 여행지 정보들을 받아옵니다", attractionList);
@@ -71,7 +71,15 @@ const SelectMoreRegion = () => {
       latitude: lat,
       longitude: lng,
     };
-    setPickedRegion((prev) => [...prev, newLocation]);
+
+    if (pickedRegion.find((v) => v.title === title)) {
+      // setCurCenter([lat, lng]);
+      // setCurLevel(6);
+    } else {
+      setPickedRegion((prev) => [...prev, newLocation]);
+      // setCurCenter([lat, lng]);
+      // setCurLevel(6);
+    }
   };
 
   const handleSelectPlace = (placeData) => {
