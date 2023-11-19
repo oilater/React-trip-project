@@ -25,7 +25,7 @@ const SelectMoreRegion = () => {
   const [open, setOpen] = useState(false); // 모달창 상태
   const [place, setPlace] = useRecoilState(placeListState);
   const setPickedRegion = useSetRecoilState(pickedRegionState);
-  const [pickedPlaces, setPickedPlaces] = useRecoilState(pickedPlacesState); // 추천 받은 여행지 중 유저가 고른 여행지 목록
+  const pickedPlaces = useRecoilValue(pickedPlacesState); // 추천 받은 여행지 중 유저가 고른 여행지 목록
   const curRegion = useRecoilValue(regionInputState); // 현재 지역 {코드, 지역명}
   const [attractionList, setAttractionList] = useState([]); // 비동기로 받을 현재 지역의 여행지 목록
   const [restaurantList, setRestaurantList] = useState([]); // 비동기로 받을 현재 지역의 음식점 목록
@@ -64,12 +64,12 @@ const SelectMoreRegion = () => {
   }, [attractionList]);
 
   const moveLocation = (title, address, lat, lng) => {
-    console.log(title, address);
+    console.log(title, address, lat, lng);
     const newLocation = {
       title: title,
       address: address,
-      lat: lat,
-      lng: lng,
+      latitude: lat,
+      longitude: lng,
     };
     setPickedRegion((prev) => [...prev, newLocation]);
   };
@@ -134,7 +134,12 @@ const SelectMoreRegion = () => {
                   }
                   onClick={() => {
                     handleSelectPlace(el);
-                    moveLocation(el.title, el.address, el.lat, el.lng);
+                    moveLocation(
+                      el.title,
+                      el.address,
+                      el.latitude,
+                      el.longitude
+                    );
                   }}
                 />
               </div>
@@ -184,7 +189,12 @@ const SelectMoreRegion = () => {
                   }
                   onClick={() => {
                     handleSelectPlace(el);
-                    moveLocation(el.title, el.address, el.lat, el.lng);
+                    moveLocation(
+                      el.title,
+                      el.address,
+                      el.latitude,
+                      el.longitude
+                    );
                   }}
                 />
               </div>

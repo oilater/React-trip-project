@@ -10,12 +10,12 @@ const PickedRegion = () => {
   const setPickedRegion = useSetRecoilState(pickedRegionState);
 
   const moveLocation = (title, address, lat, lng) => {
-    console.log(title, address);
+    console.log(title, address, lat, lng);
     const newLocation = {
       title: title,
       address: address,
-      lat: lat,
-      lng: lng,
+      latitude: lat,
+      longitude: lng,
     };
     setPickedRegion((prev) => [...prev, newLocation]);
   };
@@ -49,7 +49,9 @@ const PickedRegion = () => {
       <div className="picked-list">
         {placeList.map((el) => (
           <div
-            onClick={() => moveLocation(el.title, el.address, el.lat, el.lng)}
+            onClick={() =>
+              moveLocation(el.title, el.address, el.latitude, el.longitude)
+            }
           >
             <Card
               className="antd-card"
