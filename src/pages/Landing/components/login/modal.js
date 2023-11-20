@@ -1,16 +1,21 @@
 import "./modal.css";
+import axios from "axios";
 import userIcon from "../../../../assets/img/person.png";
 import passwordIcon from "../../../../assets/img/password.png";
 import emailIcon from "../../../../assets/img/email.png";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { loginState } from "../../../../atoms/login";
+import { loginTokenState } from "../../../../atoms/login";
+
 const Modal = ({ closeModal }) => {
   const [action, setAction] = useState("login");
   // 로그인 > 유저 입력 (아이디, 비밀번호)
   const [userId, setUserId] = useState("");
   const [userPassword, setUserPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(loginState);
+  const [isLogin, setIsLogin] = useRecoilState(loginState);
+  const [loginToken, setLoginToken] = useRecoilState(loginTokenState);
+
   const handleUserId = (e) => {
     setUserId(e.target.value);
   };
@@ -19,8 +24,22 @@ const Modal = ({ closeModal }) => {
     setUserPassword(e.target.value);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     try {
+      const loginData = {
+        id: userId,
+        pw: userPassword,
+      };
+
+      const response = await axios.post(
+        "http://localhost/api/user/login",
+        loginData
+      );
+
+      console.log(response.data.token); // 토큰 키 받아옴
+      setLoginToken(response.data.token); // 토큰 키 recoil에 세팅
+      setIsLogin(true); // 로그인 상태 true로 전환
+      closeModal(false); // 모달 창 닫기
     } catch (error) {
       console.error("로그인 실패, ", error);
     }
@@ -85,8 +104,8 @@ const Modal = ({ closeModal }) => {
           <div
             className={action === "signUp" ? "submit gray" : "submit"}
             onClick={() => {
+              action === "login" && handleLogin(); // action이 로그인일 때만 눌리도록 수정하기
               setAction("login");
-              handleLogin(); // 로그인이 되어있지 않았을 때만눌리도록 수정하기
             }}
           >
             로그인

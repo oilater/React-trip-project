@@ -1,11 +1,36 @@
 import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { loginState } from "../../../../../atoms/login";
 import SnsLink from "./sns-img";
 import Modal from "../../login/modal";
-import { Button, Dropdown } from "antd";
+import { Dropdown } from "antd";
 
 const Nav = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [isLogin, setIsLogin] = useRecoilState(loginState);
 
+  const handleLogout = () => {
+    setIsLogin(false);
+  };
+
+  const items = [
+    {
+      key: "1",
+      label: (
+        <a target="_blank" href="/mypage">
+          마이페이지
+        </a>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <a href="/" onClick={handleLogout}>
+          로그아웃
+        </a>
+      ),
+    },
+  ];
   return (
     <nav>
       <div className="nav-title">
@@ -31,14 +56,26 @@ const Nav = () => {
             url="https://www.baemin.com/_next/static/media/iconYoutube.8ab1feea.png"
             alt="유튜브 바로가기"
           />
-          <button
-            className="login-btn"
-            onClick={() => {
-              setOpenModal(true);
-            }}
-          >
-            로그인
-          </button>
+
+          {!isLogin ? (
+            <button
+              className="login-btn"
+              onClick={() => {
+                setOpenModal(true);
+              }}
+            >
+              로그인
+            </button>
+          ) : (
+            <Dropdown
+              menu={{
+                items,
+              }}
+              placement="bottom"
+            >
+              <button className="login-btn">MY</button>
+            </Dropdown>
+          )}
         </ul>
         {openModal && <Modal closeModal={setOpenModal} />}
       </div>
