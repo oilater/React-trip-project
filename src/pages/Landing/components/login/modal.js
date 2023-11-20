@@ -1,5 +1,6 @@
 import "./modal.css";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import userIcon from "../../../../assets/img/person.png";
 import passwordIcon from "../../../../assets/img/password.png";
 import emailIcon from "../../../../assets/img/email.png";
@@ -37,9 +38,15 @@ const Modal = ({ closeModal }) => {
       );
 
       console.log(response.data.token); // 토큰 키 받아옴
+      const token = response.data.token;
       setLoginToken(response.data.token); // 토큰 키 recoil에 세팅
       setIsLogin(true); // 로그인 상태 true로 전환
       closeModal(false); // 모달 창 닫기
+
+      // JWT 토큰 디코딩
+      const decodedToken = jwtDecode(token);
+
+      console.log(decodedToken);
     } catch (error) {
       console.error("로그인 실패, ", error);
     }
