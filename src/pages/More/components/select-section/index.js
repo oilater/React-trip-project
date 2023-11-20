@@ -21,6 +21,8 @@ const onChange = (key) => {
   console.log(key);
 };
 
+// 이전에 슬라이드에서 Pick한 장소는 pickedPlace에 저장되어 있음
+
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 const SelectMoreRegion = () => {
   const [open, setOpen] = useState(false); // 모달창 상태
@@ -54,7 +56,14 @@ const SelectMoreRegion = () => {
           `http://localhost/api/map/attractions?&type=3&page=0&cityCode=${curRegion.code}`
         );
 
-        setAttractionList(responseAttraction.data);
+        const filteredAttractionList = responseAttraction.data.filter((el) => {
+          for (let i = 0; i < pickedPlacesArr.length; i++) {
+            if (el.title == pickedPlacesArr[i].title) return false;
+          }
+          return true;
+        });
+
+        setAttractionList(filteredAttractionList);
         setRestaurantList(responseRestaurant.data);
         setAccomodationList(responseAccomodation.data);
       } catch (error) {
@@ -227,7 +236,7 @@ const SelectMoreRegion = () => {
         )),
       ],
     },
-    // 식당 section
+    // type 2: 식당 section
     {
       key: "2",
       label: "식당",
@@ -241,8 +250,10 @@ const SelectMoreRegion = () => {
             cursor: "pointer",
           }}
           onClick={(e) => {
-            if (e.target.closest(".add-btn") == null) setOpen(true);
-            else setOpen(false);
+            if (e.target.closest(".add-btn") == null) {
+              setOpen(true);
+              handleModal(el);
+            } else setOpen(false);
           }}
         >
           <div className="card">
@@ -277,7 +288,7 @@ const SelectMoreRegion = () => {
                 }
                 onClick={() => {
                   handleSelectPlace(el);
-                  moveLocation(el.title, el.address, el.lat, el.lng);
+                  moveLocation(el.title, el.address, el.latitude, el.longitude);
                 }}
               />
             </div>
@@ -298,8 +309,10 @@ const SelectMoreRegion = () => {
             cursor: "pointer",
           }}
           onClick={(e) => {
-            if (e.target.closest(".add-btn") == null) setOpen(true);
-            else setOpen(false);
+            if (e.target.closest(".add-btn") == null) {
+              setOpen(true);
+              handleModal(el);
+            } else setOpen(false);
           }}
         >
           <div className="card">
@@ -328,13 +341,13 @@ const SelectMoreRegion = () => {
                 }
                 size="small"
                 style={
-                  pickedRegion.find((item) => item.id === el.id) !== null
+                  pickedRegion.find((item) => item.id === el.id)
                     ? { backgroundColor: "dodgerblue" }
                     : { backgroundColor: "#E0E0E0" }
                 }
                 onClick={() => {
                   handleSelectPlace(el);
-                  moveLocation(el.title, el.address, el.lat, el.lng);
+                  moveLocation(el.title, el.address, el.latitude, el.longitude);
                 }}
               />
             </div>
