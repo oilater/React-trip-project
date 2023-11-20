@@ -7,12 +7,17 @@ import { pickedRegionState } from "../../../../atoms/userInputData";
 import { pickedPlacesState } from "../../../../atoms/pickedPlaceList";
 import { regionInputState } from "../../../../atoms/userInputData";
 // 내가 찜한 명소, 식당, 숙소 저장할 곳
-import { attractionListState } from "../../../../atoms/recommandData";
-import { restaurantListState } from "../../../../atoms/recommandData";
-import { accomodationListState } from "../../../../atoms/recommandData";
+import { myAttractionListState } from "../../../../atoms/myPick";
+import { myRestaurantListState } from "../../../../atoms/myPick";
+import { myAccomodationListState } from "../../../../atoms/myPick";
 
 import { Tabs, Input, Card, Button, Modal, Carousel } from "antd";
-import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  CheckOutlined,
+  HeartOutlined,
+  HeartFilled,
+} from "@ant-design/icons";
 
 import "./index.css";
 
@@ -38,9 +43,23 @@ const SelectMoreRegion = () => {
   const setCurLevel = useSetRecoilState(curLevelState);
   const setCurCenter = useSetRecoilState(curCenterState);
 
-  const pickedPlacesArr = Array.from(pickedPlaces); // 이전에 유저가 Pick했던 것 : Set -> 배열 변환
+  // 내가 픽한 명소, 식당, 숙소 리스트 (마이페이지에서 사용할 것)
+  const [myAttrationList, setMyAttractionList] = useRecoilState(
+    myAttractionListState
+  );
 
-  // axios로 데이터 받아오기
+  const [myRestaurantList, setMyRestaurantList] = useRecoilState(
+    myRestaurantListState
+  );
+
+  const [myAccomodationList, setMyAccomodationList] = useRecoilState(
+    myAccomodationListState
+  );
+
+  // 이전에 추천 슬라이드에서 유저가 Pick 했던 것 : Set -> 배열 변환
+  const pickedPlacesArr = Array.from(pickedPlaces);
+
+  // axios로 서버에서 데이터 받아오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -100,6 +119,42 @@ const SelectMoreRegion = () => {
     setOpen(true);
   };
 
+  // 명소 하트 클릭 시
+  const handleClickMyAttraction = (myPlace) => {
+    if ([...myAttrationList].includes(myPlace)) {
+      const filteredAttractionList = [...myAttrationList].filter(
+        (v) => v !== myPlace
+      );
+      setMyAttractionList(new Set(filteredAttractionList));
+    } else {
+      setMyAttractionList((prev) => new Set([...prev, myPlace]));
+    }
+  };
+
+  // 명소 하트 클릭 시
+  const handleClickMyRestaurant = (myPlace) => {
+    if ([...myRestaurantList].includes(myPlace)) {
+      const filteredRestaurantList = [...myRestaurantList].filter(
+        (v) => v !== myPlace
+      );
+      setMyRestaurantList(new Set(filteredRestaurantList));
+    } else {
+      setMyRestaurantList((prev) => new Set([...prev, myPlace]));
+    }
+  };
+
+  // 명소 하트 클릭 시
+  const handleClickMyAccomodation = (myPlace) => {
+    if ([...myAccomodationList].includes(myPlace)) {
+      const filteredAccomodationList = [...myAccomodationList].filter(
+        (v) => v !== myPlace
+      );
+      setMyAccomodationList(new Set(filteredAccomodationList));
+    } else {
+      setMyAccomodationList((prev) => new Set([...prev, myPlace]));
+    }
+  };
+
   useEffect(() => {
     console.log("디테일 인포임", detailInfo);
   }, [detailInfo]);
@@ -115,7 +170,7 @@ const SelectMoreRegion = () => {
             className="antd-card"
             key={el.id}
             style={{
-              width: 430,
+              width: 450,
               marginTop: 5,
               cursor: "pointer",
             }}
@@ -125,7 +180,10 @@ const SelectMoreRegion = () => {
                 handleModal(el);
               } else {
                 setOpen(false);
-                handleSelectPlace(el);
+                // pickedPlaceArr에서도 하트 버튼 눌렀을 때는 내가 선택한 장소 리스트에 추가되면 안된다.
+                if (e.target.closest(".heart-btn") == null) {
+                  handleSelectPlace(el);
+                }
               }
             }}
           >
@@ -144,6 +202,37 @@ const SelectMoreRegion = () => {
                 </div>
               </div>
               <div className="add-btn">
+                {/* 하트 버튼 */}
+                <Button
+                  className="heart-btn"
+                  type="primary"
+                  icon={
+                    [...myAttrationList].find((item) => item.id === el.id) ? (
+                      <HeartFilled />
+                    ) : (
+                      <HeartOutlined />
+                    )
+                  }
+                  size="small"
+                  style={
+                    [...myAttrationList].find((item) => item.id === el.id)
+                      ? {
+                          backgroundColor: "rgb(255, 88, 88)",
+                          marginRight: "0.5rem",
+                        }
+                      : { backgroundColor: "#E0E0E0", marginRight: "0.5rem" }
+                  }
+                  onClick={() => {
+                    handleClickMyAttraction(el);
+                    moveLocation(
+                      el.title,
+                      el.address,
+                      el.latitude,
+                      el.longitude
+                    );
+                  }}
+                />
+                {/* 플러스 버튼 */}
                 <Button
                   type="primary"
                   icon={
@@ -179,7 +268,7 @@ const SelectMoreRegion = () => {
             className="antd-card"
             key={el.id}
             style={{
-              width: 430,
+              width: 450,
               marginTop: 5,
               cursor: "pointer",
             }}
@@ -205,6 +294,37 @@ const SelectMoreRegion = () => {
                 </div>
               </div>
               <div className="add-btn">
+                {/* 하트 버튼 */}
+                <Button
+                  className="heart-btn"
+                  type="primary"
+                  icon={
+                    [...myAttrationList].find((item) => item.id === el.id) ? (
+                      <HeartFilled />
+                    ) : (
+                      <HeartOutlined />
+                    )
+                  }
+                  size="small"
+                  style={
+                    [...myAttrationList].find((item) => item.id === el.id)
+                      ? {
+                          backgroundColor: "rgb(255, 88, 88)",
+                          marginRight: "0.5rem",
+                        }
+                      : { backgroundColor: "#E0E0E0", marginRight: "0.5rem" }
+                  }
+                  onClick={() => {
+                    handleClickMyAttraction(el);
+                    moveLocation(
+                      el.title,
+                      el.address,
+                      el.latitude,
+                      el.longitude
+                    );
+                  }}
+                />
+                {/* 플러스 버튼 */}
                 <Button
                   type="primary"
                   icon={
@@ -245,7 +365,7 @@ const SelectMoreRegion = () => {
           className="antd-card"
           key={el.id}
           style={{
-            width: 430,
+            width: 450,
             marginTop: 5,
             cursor: "pointer",
           }}
@@ -271,6 +391,29 @@ const SelectMoreRegion = () => {
               </div>
             </div>
             <div className="add-btn">
+              {/* 하트 버튼 */}
+              <Button
+                className="heart-btn"
+                type="primary"
+                icon={
+                  [...myRestaurantList].find((item) => item.id === el.id) ? (
+                    <HeartFilled />
+                  ) : (
+                    <HeartOutlined />
+                  )
+                }
+                size="small"
+                style={
+                  [...myRestaurantList].find((item) => item.id === el.id)
+                    ? { backgroundColor: "#FF0000", marginRight: "0.5rem" }
+                    : { backgroundColor: "#E0E0E0", marginRight: "0.5rem" }
+                }
+                onClick={() => {
+                  handleClickMyRestaurant(el);
+                  moveLocation(el.title, el.address, el.latitude, el.longitude);
+                }}
+              />
+              {/* 플러스 버튼 */}
               <Button
                 type="primary"
                 icon={
@@ -330,6 +473,29 @@ const SelectMoreRegion = () => {
               </div>
             </div>
             <div className="add-btn">
+              {/* 하트 버튼 */}
+              <Button
+                className="heart-btn"
+                type="primary"
+                icon={
+                  [...myAccomodationList].find((item) => item.id === el.id) ? (
+                    <HeartFilled />
+                  ) : (
+                    <HeartOutlined />
+                  )
+                }
+                size="small"
+                style={
+                  [...myAccomodationList].find((item) => item.id === el.id)
+                    ? { backgroundColor: "#FF0000", marginRight: "0.5rem" }
+                    : { backgroundColor: "#E0E0E0", marginRight: "0.5rem" }
+                }
+                onClick={() => {
+                  handleClickMyAccomodation(el);
+                  moveLocation(el.title, el.address, el.latitude, el.longitude);
+                }}
+              />
+              {/* 플러스 버튼 */}
               <Button
                 type="primary"
                 icon={
@@ -409,7 +575,7 @@ const SelectMoreRegion = () => {
             placeholder="장소명을 입력하세요"
             onSearch={onSearch}
             style={{
-              width: 430,
+              width: 450,
               paddingBottom: 10,
             }}
           />
@@ -420,7 +586,7 @@ const SelectMoreRegion = () => {
             items={items}
             onChange={onChange}
             size="large"
-            tabBarGutter={100}
+            tabBarGutter={120}
             tabBarStyle={{ paddingLeft: 50, fontWeight: 600 }}
           />
         </div>

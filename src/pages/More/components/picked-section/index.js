@@ -31,11 +31,6 @@ const PickedRegion = () => {
 
   const handleDeletePlace = (val) => {
     const updatePlace = pickedRegion.filter((place) => place.id !== val);
-    // const filteredPlaces = [];
-    // for (const p of placeList) {
-    //   if (p.id !== val) filteredPlaces.push(p);
-    // }
-
     setPickedRegion(updatePlace);
   };
 

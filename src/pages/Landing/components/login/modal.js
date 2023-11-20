@@ -5,9 +5,10 @@ import userIcon from "../../../../assets/img/person.png";
 import passwordIcon from "../../../../assets/img/password.png";
 import emailIcon from "../../../../assets/img/email.png";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { loginState } from "../../../../atoms/login";
 import { loginTokenState } from "../../../../atoms/login";
+import { loginedUserState } from "../../../../atoms/login";
 
 const Modal = ({ closeModal }) => {
   const [action, setAction] = useState("login");
@@ -16,6 +17,7 @@ const Modal = ({ closeModal }) => {
   const [userPassword, setUserPassword] = useState("");
   const [isLogin, setIsLogin] = useRecoilState(loginState);
   const [loginToken, setLoginToken] = useRecoilState(loginTokenState);
+  const setLoginedUser = useSetRecoilState(loginedUserState);
 
   const handleUserId = (e) => {
     setUserId(e.target.value);
@@ -45,7 +47,7 @@ const Modal = ({ closeModal }) => {
 
       // JWT 토큰 디코딩
       const decodedToken = jwtDecode(token);
-
+      setLoginedUser(decodedToken);
       console.log(decodedToken);
     } catch (error) {
       console.error("로그인 실패, ", error);

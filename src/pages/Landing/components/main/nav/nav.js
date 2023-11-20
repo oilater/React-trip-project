@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { loginState } from "../../../../../atoms/login";
+import { loginedUserState } from "../../../../../atoms/login";
+
 import SnsLink from "./sns-img";
 import Modal from "../../login/modal";
 import { Dropdown } from "antd";
@@ -8,6 +10,7 @@ import { Dropdown } from "antd";
 const Nav = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isLogin, setIsLogin] = useRecoilState(loginState);
+  const loginedUser = useRecoilValue(loginedUserState);
 
   const handleLogout = () => {
     setIsLogin(false);
@@ -16,14 +19,14 @@ const Nav = () => {
   const items = [
     {
       key: "1",
-      label: (
-        <a target="_blank" href="/mypage">
-          마이페이지
-        </a>
-      ),
+      label: <p>{loginedUser.name}님 환영해요 :)</p>,
     },
     {
       key: "2",
+      label: <a href="/mypage">마이페이지</a>,
+    },
+    {
+      key: "3",
       label: (
         <a href="/" onClick={handleLogout}>
           로그아웃

@@ -12,4 +12,11 @@ export const loginState = atom({
 export const loginTokenState = atom({
   key: "loginTokenState",
   default: "",
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const loginedUserState = atom({
+  key: "loginedUserState",
+  default: {},
+  effects_UNSTABLE: [persistAtom],
 });

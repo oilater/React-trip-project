@@ -104,7 +104,7 @@ const SelectRegion = () => {
       {regionList ? (
         <div className="select-region">
           <Select
-            defaultValue={"어디를 여행 하고 싶으신가요?"}
+            defaultValue={"어디로 여행을 떠나볼까요?"}
             style={{
               width: 600,
               height: 40,
