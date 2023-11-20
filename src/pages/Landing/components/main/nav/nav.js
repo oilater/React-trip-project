@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SnsLink from "./sns-img";
 import Modal from "../../login/modal";
+import { Button, Dropdown } from "antd";
 
 const Nav = () => {
   const [openModal, setOpenModal] = useState(false);

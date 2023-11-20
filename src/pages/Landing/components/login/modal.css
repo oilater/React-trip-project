@@ -12,7 +12,7 @@
     z-index: 5; 
 }
 
-.container {
+.modal-container {
     position: relative;
     display: flex;
     flex-direction: column;

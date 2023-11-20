@@ -2,13 +2,33 @@ import "./modal.css";
 import userIcon from "../../../../assets/img/person.png";
 import passwordIcon from "../../../../assets/img/password.png";
 import emailIcon from "../../../../assets/img/email.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { loginState } from "../../../../atoms/login";
 const Modal = ({ closeModal }) => {
-  const [action, setAction] = useState("로그인");
+  const [action, setAction] = useState("login");
+  // 로그인 > 유저 입력 (아이디, 비밀번호)
+  const [userId, setUserId] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(loginState);
+  const handleUserId = (e) => {
+    setUserId(e.target.value);
+  };
+
+  const handleUserPassword = (e) => {
+    setUserPassword(e.target.value);
+  };
+
+  const handleLogin = () => {
+    try {
+    } catch (error) {
+      console.error("로그인 실패, ", error);
+    }
+  };
 
   return (
     <div className="modal-background">
-      <div className="container">
+      <div className="modal-container">
         <button className="close-btn" onClick={() => closeModal(false)}>
           X
         </button>
@@ -19,7 +39,7 @@ const Modal = ({ closeModal }) => {
           <div className="underline"></div>
         </div>
         <div className="inputs">
-          {action === "로그인" ? (
+          {action === "login" ? (
             <></>
           ) : (
             <>
@@ -36,26 +56,37 @@ const Modal = ({ closeModal }) => {
 
           <div className="input">
             <img src={userIcon} alt="유저 아이디 아이콘" />
-            <input type="text" placeholder="아이디" />
+            <input
+              onChange={handleUserId}
+              value={userId}
+              type="text"
+              placeholder="아이디"
+            />
           </div>
           <div className="input">
             <img src={passwordIcon} alt="비밀번호 아이콘" />
-            <input type="password" placeholder="비밀번호" />
+            <input
+              onChange={handleUserPassword}
+              value={userPassword}
+              type="password"
+              placeholder="비밀번호"
+            />
           </div>
         </div>
         <div className="submit-container">
           <div
-            className={action === "로그인" ? "submit gray" : "submit"}
+            className={action === "login" ? "submit gray" : "submit"}
             onClick={() => {
-              setAction("회원가입");
+              setAction("signUp");
             }}
           >
             회원가입
           </div>
           <div
-            className={action === "회원가입" ? "submit gray" : "submit"}
+            className={action === "signUp" ? "submit gray" : "submit"}
             onClick={() => {
-              setAction("로그인");
+              setAction("login");
+              handleLogin(); // 로그인이 되어있지 않았을 때만눌리도록 수정하기
             }}
           >
             로그인
