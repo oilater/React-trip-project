@@ -9,7 +9,7 @@ video {
   object-fit: cover;
   position: absolute;
   filter: brightness(0.8); /* 0.5는 반반 어둡게 만듭니다. */
-  z-index: -1;
+  z-index: -2;
 }
 
 .sub-page {

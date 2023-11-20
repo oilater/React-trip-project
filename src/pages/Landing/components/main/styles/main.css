@@ -6,6 +6,7 @@
   }
   
 .bg-video {
+  position: absolute;
   z-index: -5;
 }
 
@@ -87,7 +88,7 @@
     position: relative;
     left: 3.5rem;
     margin-top: 29.5rem;
-    
+    z-index: 0;
   }
   
   .go-search-btn {

@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { placeListState } from "../../../../atoms/placeList";
+import { curCenterState } from "../../../../atoms/map";
+import { curLevelState } from "../../../../atoms/map";
 import { pickedRegionState } from "../../../../atoms/userInputData";
 import { pickedPlacesState } from "../../../../atoms/pickedPlaceList";
 import { regionInputState } from "../../../../atoms/userInputData";
@@ -10,7 +11,7 @@ import { attractionListState } from "../../../../atoms/recommandData";
 import { restaurantListState } from "../../../../atoms/recommandData";
 import { accomodationListState } from "../../../../atoms/recommandData";
 
-import { Tabs, Input, Avatar, Card, Button, Modal } from "antd";
+import { Tabs, Input, Card, Button, Modal, Carousel } from "antd";
 import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
 
 import "./index.css";
@@ -23,30 +24,34 @@ const onChange = (key) => {
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 const SelectMoreRegion = () => {
   const [open, setOpen] = useState(false); // 모달창 상태
-  const [place, setPlace] = useRecoilState(placeListState);
+  const [detailInfo, setDetailInfo] = useState({}); // 여행지 클릭 > 상세보기 모달창
+  // const [place, setPlace] = useRecoilState(placeListState);
   const [pickedRegion, setPickedRegion] = useRecoilState(pickedRegionState);
   const pickedPlaces = useRecoilValue(pickedPlacesState); // 추천 받은 여행지 중 유저가 고른 여행지 목록
-  const curRegion = useRecoilValue(regionInputState); // 현재 지역 {코드, 지역명}
+  const curRegion = useRecoilValue(regionInputState); // 현재 지역 {코드, 지역명} - 큰 제목 띄우기 위함
   const [attractionList, setAttractionList] = useState([]); // 비동기로 받을 현재 지역의 여행지 목록
   const [restaurantList, setRestaurantList] = useState([]); // 비동기로 받을 현재 지역의 음식점 목록
   const [accomodationList, setAccomodationList] = useState([]); // 비동기로 받을 현재 지역의 숙소 목록
 
-  const pickedPlacesArr = Array.from(pickedPlaces); // Set -> 배열 변환
+  const setCurLevel = useSetRecoilState(curLevelState);
+  const setCurCenter = useSetRecoilState(curCenterState);
+
+  const pickedPlacesArr = Array.from(pickedPlaces); // 이전에 유저가 Pick했던 것 : Set -> 배열 변환
 
   // axios로 데이터 받아오기
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responseAttraction = await axios.get(
-          `http://localhost/api/map/attractions?&type=1&page=0&cityCode=${curRegion.code}&exceptId=1`
+          `http://localhost/api/map/attractions?&type=1&page=0&cityCode=${curRegion.code}`
         );
 
         const responseRestaurant = await axios.get(
-          `http://localhost/api/map/attractions?&type=2&page=0&cityCode=${curRegion.code}&exceptId=1`
+          `http://localhost/api/map/attractions?&type=2&page=0&cityCode=${curRegion.code}`
         );
 
         const responseAccomodation = await axios.get(
-          `http://localhost/api/map/attractions?&type=3&page=0&cityCode=${curRegion.code}&exceptId=1`
+          `http://localhost/api/map/attractions?&type=3&page=0&cityCode=${curRegion.code}`
         );
 
         setAttractionList(responseAttraction.data);
@@ -65,34 +70,30 @@ const SelectMoreRegion = () => {
 
   const moveLocation = (title, address, lat, lng) => {
     console.log(title, address, lat, lng);
-    const newLocation = {
-      title: title,
-      address: address,
-      latitude: lat,
-      longitude: lng,
-    };
 
     if (pickedRegion.find((v) => v.title === title)) {
-      // setCurCenter([lat, lng]);
-      // setCurLevel(6);
+      setCurCenter([lat, lng]);
+      setCurLevel(7);
     } else {
-      setPickedRegion((prev) => [...prev, newLocation]);
-      // setCurCenter([lat, lng]);
-      // setCurLevel(6);
+      setCurCenter([lat, lng]);
+      setCurLevel(7);
     }
   };
 
   const handleSelectPlace = (placeData) => {
-    for (const item of place) {
-      if (item.id === placeData.id) {
-        // 해당 원소가 place에 있다면 placeData를 place에서 제거해줘야 함
-        const filteredPlaces = place.filter((v) => v.id !== placeData.id);
-        setPlace(filteredPlaces);
-        return;
-      }
-    }
-    setPlace((origin) => [...origin, placeData]);
+    const tmpArr = new Set([...pickedRegion, placeData]);
+    setPickedRegion(() => Array.from(tmpArr));
+    setDetailInfo(placeData);
   };
+
+  const handleModal = (placeData) => {
+    setDetailInfo(placeData);
+    setOpen(true);
+  };
+
+  useEffect(() => {
+    console.log("디테일 인포임", detailInfo);
+  }, [detailInfo]);
 
   const items = [
     {
@@ -110,12 +111,21 @@ const SelectMoreRegion = () => {
               cursor: "pointer",
             }}
             onClick={(e) => {
-              if (e.target.closest(".add-btn") == null) setOpen(true);
-              else setOpen(false);
+              if (e.target.closest(".add-btn") == null) {
+                setOpen(true);
+                handleModal(el);
+              } else {
+                setOpen(false);
+                handleSelectPlace(el);
+              }
             }}
           >
             <div className="card">
-              <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=1" />
+              <img
+                style={{ width: "4.5rem", height: "4.5rem", borderRadius: 16 }}
+                src={el.mainImagePath}
+                alt="카드 장소 이미지"
+              />
               <div className="card-text-wrapper">
                 <div id="title" className="card-title">
                   {el.title}
@@ -128,7 +138,7 @@ const SelectMoreRegion = () => {
                 <Button
                   type="primary"
                   icon={
-                    place.find((item) => item.id === el.id) ? (
+                    pickedRegion.find((item) => item.id === el.id) ? (
                       <CheckOutlined />
                     ) : (
                       <PlusOutlined />
@@ -136,7 +146,7 @@ const SelectMoreRegion = () => {
                   }
                   size="small"
                   style={
-                    place.find((item) => item.id === el.id)
+                    pickedRegion.find((item) => item.id === el.id)
                       ? { backgroundColor: "dodgerblue" }
                       : { backgroundColor: "#E0E0E0" }
                   }
@@ -165,12 +175,18 @@ const SelectMoreRegion = () => {
               cursor: "pointer",
             }}
             onClick={(e) => {
-              if (e.target.closest(".add-btn") == null) setOpen(true);
-              else setOpen(false);
+              if (e.target.closest(".add-btn") == null) {
+                setOpen(true);
+                handleModal(el);
+              } else setOpen(false);
             }}
           >
             <div className="card">
-              <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=1" />
+              <img
+                style={{ width: "4.5rem", height: "4.5rem", borderRadius: 15 }}
+                src={el.mainImagePath}
+                alt="카드 장소 이미지"
+              />
               <div className="card-text-wrapper">
                 <div id="title" className="card-title">
                   {el.title}
@@ -183,7 +199,7 @@ const SelectMoreRegion = () => {
                 <Button
                   type="primary"
                   icon={
-                    place.find((item) => item.id === el.id) ? (
+                    pickedRegion.find((item) => item.id === el.id) !== null ? (
                       <CheckOutlined />
                     ) : (
                       <PlusOutlined />
@@ -191,7 +207,7 @@ const SelectMoreRegion = () => {
                   }
                   size="small"
                   style={
-                    place.find((item) => item.id === el.id)
+                    pickedRegion.find((item) => item.id === el.id)
                       ? { backgroundColor: "dodgerblue" }
                       : { backgroundColor: "#E0E0E0" }
                   }
@@ -230,7 +246,11 @@ const SelectMoreRegion = () => {
           }}
         >
           <div className="card">
-            <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=1" />
+            <img
+              style={{ width: "4.5rem", height: "4.5rem", borderRadius: 15 }}
+              src={el.mainImagePath}
+              alt="카드 장소 이미지"
+            />
             <div className="card-text-wrapper">
               <div id="title" className="card-title">
                 {el.title}
@@ -243,7 +263,7 @@ const SelectMoreRegion = () => {
               <Button
                 type="primary"
                 icon={
-                  place.find((item) => item.id === el.id) ? (
+                  pickedRegion.find((item) => item.id === el.id) !== null ? (
                     <CheckOutlined />
                   ) : (
                     <PlusOutlined />
@@ -251,7 +271,7 @@ const SelectMoreRegion = () => {
                 }
                 size="small"
                 style={
-                  place.find((item) => item.id === el.id)
+                  pickedRegion.find((item) => item.id === el.id)
                     ? { backgroundColor: "dodgerblue" }
                     : { backgroundColor: "#E0E0E0" }
                 }
@@ -283,7 +303,11 @@ const SelectMoreRegion = () => {
           }}
         >
           <div className="card">
-            <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=1" />
+            <img
+              style={{ width: "4.5rem", height: "4.5rem", borderRadius: 15 }}
+              src={el.mainImagePath}
+              alt="카드 장소 이미지"
+            />
             <div className="card-text-wrapper">
               <div id="title" className="card-title">
                 {el.title}
@@ -296,7 +320,7 @@ const SelectMoreRegion = () => {
               <Button
                 type="primary"
                 icon={
-                  place.find((item) => item.id === el.id) ? (
+                  pickedRegion.find((item) => item.id === el.id) !== null ? (
                     <CheckOutlined />
                   ) : (
                     <PlusOutlined />
@@ -304,7 +328,7 @@ const SelectMoreRegion = () => {
                 }
                 size="small"
                 style={
-                  place.find((item) => item.id === el.id)
+                  pickedRegion.find((item) => item.id === el.id) !== null
                     ? { backgroundColor: "dodgerblue" }
                     : { backgroundColor: "#E0E0E0" }
                 }
@@ -322,17 +346,47 @@ const SelectMoreRegion = () => {
 
   return (
     <>
-      {/* 모달창 */}
+      {/* 모달 창 */}
       <Modal
-        title="서울숲"
+        title={
+          <>
+            <div style={{ fontSize: "0.9rem", color: "dodgerblue" }}>
+              <p>{detailInfo.address}</p>
+            </div>
+            <div style={{ fontSize: "2rem" }}>{detailInfo.title}</div>
+          </>
+        }
         centered
         open={open}
-        onOk={() => setOpen(false)}
         onCancel={() => setOpen(false)}
+        onOk={() => setOpen(false)}
         width={1000}
-        bodyStyle={{ height: "600px", overflowY: "auto" }}
+        cancelText="닫기"
+        bodyStyle={{ height: "100%" }}
       >
-        <p>서울 숲은 공기가 좋아요 놀러오삼</p>
+        <div
+          style={{
+            fontSize: "1rem",
+            paddingBottom: "3rem",
+          }}
+        >
+          <p>{detailInfo.overview}</p>
+        </div>
+        <Carousel autoplay>
+          <div className="modal-img content-style">
+            <img
+              style={{
+                objectFit: "cover",
+                height: "100%",
+                width: "100%",
+                margin: "0 auto",
+                borderRadius: "0.5rem",
+              }}
+              src={detailInfo.mainImagePath}
+              alt="모달 명소 이미지"
+            />
+          </div>
+        </Carousel>
       </Modal>
       {/* 메인 화면 */}
       <div className="select-region-wrapper">

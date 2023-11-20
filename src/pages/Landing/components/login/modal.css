@@ -9,25 +9,109 @@
     justify-content: center;
     align-items: center;
     backdrop-filter: blur(3px);
-    z-index: 5;
+    z-index: 5; 
 }
 
-
-.modal-container {
-    width: 380px;
-    height: 450px;
-    border-radius: 12px;
-    background-color: #fff;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+.container {
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 25px;
-    color: black;
-    z-index: 10;
+    margin: auto;
+    margin-top: 200px;
+    width: 400px;
+    background-color: #fff;
+    padding-bottom: 30px;
+    z-index: 100;
+    border-radius: 0.7rem;
 }
 
-.modal-container .title {
-    display: inline-block;
-    text-align: center;
-    margin-top: 10px;
+.close-btn {
+    position: absolute;
+    right: 0.7rem;
+    top: 0.7rem;
+    font-size: 0.9rem;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.text {
+    color: #3c009d;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.text span {
+    font-size: 1.8rem;
+}
+
+.underline {
+    width: 3rem;
+    margin-top: 1rem;
+    height: 0.2rem;
+    background-color: #3c009d;
+    border-radius: 1rem;
+}
+
+.inputs {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 80%;
+    height: 3rem;
+    background-color: #f4f4f4;
+    border-radius: 0.5rem;
+}
+
+.input img {
+    margin: 0px 1rem;
+}
+
+.input input {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 1rem;
+}
+
+.submit-container {
+    display: flex;
+    gap: 30px;
+    margin: 3rem auto;
+}
+
+.submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 8rem;
+    height: 3rem;
+    color: #fff;
+    background-color: #4c00b4;
+    border-radius: 1.2rem;
+    font-size: 19px;
+    font-weight: 600;
+    cursor:pointer;
+}
+
+.gray {
+    background-color: #ffffff;
+    color: #4c00b4;
+    border: 1px solid #4c00b4;
 }

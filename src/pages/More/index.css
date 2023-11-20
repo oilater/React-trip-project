@@ -15,7 +15,7 @@
   width: 100%;
   background-color: white;
   font-weight: 700;
-  z-index: 2;
+  /* z-index: 1; */
 }
 
 #nav a {

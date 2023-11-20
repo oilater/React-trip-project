@@ -70,22 +70,13 @@ const Recommand = () => {
       }
     };
     fetchData();
-  }, []);
-
-  // 받아온 추천 장소 리스트 확인용
-  useEffect(() => {
-    console.log(recommandList);
-  }, [recommandList]);
+  }, [keywordQueryString, regionValue.code, setRecommandList]);
 
   const handleClickPlace = (curPlace) => {
     console.log(curPlace);
     setPickedPlace(curPlace); // 슬라이드에서 클릭한 지역의 정보를 curPlace에 set 해주기
     setOpen(true); // 모달창 열기
   };
-
-  useEffect(() => {
-    console.log(pickedPlaces);
-  }, [pickedPlaces]);
 
   // 사용자가 PICK 을 누르면
   const handlePick = (pickedPlace) => {
@@ -106,10 +97,10 @@ const Recommand = () => {
             <Swiper
               // effect={"coverflow"}
               grabCursor={false}
-              centeredSlides={false}
+              centeredSlides={true}
               loop={true}
               slidesPerView={3}
-              slidesPerGroup={2}
+              slidesPerGroup={1}
               coverflowEffect={{
                 rotate: 0,
                 stretch: 0,
