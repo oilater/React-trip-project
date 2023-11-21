@@ -11,7 +11,7 @@ import { myAttractionListState } from "../../../../atoms/myPick";
 import { myRestaurantListState } from "../../../../atoms/myPick";
 import { myAccomodationListState } from "../../../../atoms/myPick";
 
-import { Tabs, Input, Card, Button, Modal, Carousel } from "antd";
+import { Tabs, Input, Card, Button, Modal, Carousel, Table } from "antd";
 import {
   PlusOutlined,
   CheckOutlined,
@@ -28,7 +28,8 @@ const onChange = (key) => {
 
 // 이전에 슬라이드에서 Pick한 장소는 pickedPlace에 저장되어 있음
 
-const onSearch = (value, _e, info) => console.log(info?.source, value);
+// const onSearch = (value, _e, info) => console.log(info?.source, value);
+
 const SelectMoreRegion = () => {
   const [open, setOpen] = useState(false); // 모달창 상태
   const [detailInfo, setDetailInfo] = useState({}); // 여행지 클릭 > 상세보기 모달창
@@ -39,23 +40,29 @@ const SelectMoreRegion = () => {
   const [attractionList, setAttractionList] = useState([]); // 비동기로 받을 현재 지역의 여행지 목록
   const [restaurantList, setRestaurantList] = useState([]); // 비동기로 받을 현재 지역의 음식점 목록
   const [accomodationList, setAccomodationList] = useState([]); // 비동기로 받을 현재 지역의 숙소 목록
+  const [searchValue, setSearchValue] = useState(""); // 유저가 검색창에 입력한 값
+  // 무한 스크롤
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+
+  const [filteredAttractions, setFilteredAttractions] = useState([]);
+  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+  const [filteredAccommodations, setFilteredAccommodations] = useState([]);
 
   const setCurLevel = useSetRecoilState(curLevelState);
   const setCurCenter = useSetRecoilState(curCenterState);
 
-  // 내가 픽한 명소, 식당, 숙소 리스트 (마이페이지에서 사용할 것)
+  // 내가 픽한 명소, 식당, 숙소 리스트 (마이페이지)
   const [myAttrationList, setMyAttractionList] = useRecoilState(
     myAttractionListState
   );
-
   const [myRestaurantList, setMyRestaurantList] = useRecoilState(
     myRestaurantListState
   );
-
   const [myAccomodationList, setMyAccomodationList] = useRecoilState(
     myAccomodationListState
   );
-
   // 이전에 추천 슬라이드에서 유저가 Pick 했던 것 : Set -> 배열 변환
   const pickedPlacesArr = Array.from(pickedPlaces);
 
@@ -63,6 +70,8 @@ const SelectMoreRegion = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
+
         const responseAttraction = await axios.get(
           `http://localhost/api/map/attractions?&type=1&page=0&cityCode=${curRegion.code}`
         );
@@ -85,6 +94,21 @@ const SelectMoreRegion = () => {
         setAttractionList(filteredAttractionList);
         setRestaurantList(responseRestaurant.data);
         setAccomodationList(responseAccomodation.data);
+
+        // Filter attractions based on search term
+        setFilteredAttractions(
+          attractionList.filter((el) => el.title.includes(searchValue))
+        );
+
+        // Filter restaurants based on search term
+        setFilteredRestaurants(
+          restaurantList.filter((el) => el.title.includes(searchValue))
+        );
+
+        // Filter accommodations based on search term
+        setFilteredAccommodations(
+          accomodationList.filter((el) => el.title.includes(searchValue))
+        );
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
@@ -573,7 +597,8 @@ const SelectMoreRegion = () => {
         <div className="region-search-bar">
           <Search
             placeholder="장소명을 입력하세요"
-            onSearch={onSearch}
+            // onSearch={onSearch}
+            onChange={(e) => setSearchValue(e.target.value)}
             style={{
               width: 450,
               paddingBottom: 10,
