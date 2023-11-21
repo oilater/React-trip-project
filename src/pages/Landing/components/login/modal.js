@@ -1,4 +1,5 @@
 import "./modal.css";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import userIcon from "../../../../assets/img/person.png";
@@ -6,9 +7,10 @@ import passwordIcon from "../../../../assets/img/password.png";
 import emailIcon from "../../../../assets/img/email.png";
 import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
+import { loginedUserState } from "../../../../atoms/login";
 import { loginState } from "../../../../atoms/login";
 import { loginTokenState } from "../../../../atoms/login";
-import { loginedUserState } from "../../../../atoms/login";
 
 const Modal = ({ closeModal }) => {
   const [action, setAction] = useState("login");
@@ -18,7 +20,9 @@ const Modal = ({ closeModal }) => {
   const [isLogin, setIsLogin] = useRecoilState(loginState);
   const [loginToken, setLoginToken] = useRecoilState(loginTokenState);
   const setLoginedUser = useSetRecoilState(loginedUserState);
-
+  const loginedUser = useRecoilValue(loginedUserState); // 로그인한 유저의 정보 (디코딩해서 받아옴)
+  const navigate = useNavigate();
+  const { admin } = useLocation();
   const handleUserId = (e) => {
     setUserId(e.target.value);
   };
@@ -48,11 +52,18 @@ const Modal = ({ closeModal }) => {
       // JWT 토큰 디코딩
       const decodedToken = jwtDecode(token);
       setLoginedUser(decodedToken);
+
       console.log(decodedToken);
     } catch (error) {
       console.error("로그인 실패, ", error);
     }
   };
+
+  useEffect(() => {
+    if (loginedUser && loginedUser.role === "admin") {
+      navigate("/admin", { state: admin });
+    }
+  }, [loginedUser]);
 
   return (
     <div className="modal-background">
