@@ -1,11 +1,13 @@
 import "./modal.css";
-import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+
 import userIcon from "../../../../assets/img/person.png";
 import passwordIcon from "../../../../assets/img/password.png";
 import emailIcon from "../../../../assets/img/email.png";
-import { useEffect, useState } from "react";
+
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { useRecoilValue } from "recoil";
 import { loginedUserState } from "../../../../atoms/login";

@@ -11,7 +11,7 @@ import { myAttractionListState } from "../../../../atoms/myPick";
 import { myRestaurantListState } from "../../../../atoms/myPick";
 import { myAccomodationListState } from "../../../../atoms/myPick";
 import { loginTokenState } from "../../../../atoms/login";
-import { Tabs, Input, Card, Button, Modal, Carousel, Table } from "antd";
+import { Tabs, Input, Card, Button, Modal, Carousel } from "antd";
 import {
   PlusOutlined,
   CheckOutlined,
@@ -52,7 +52,7 @@ const SelectMoreRegion = () => {
   const [filteredAttractions, setFilteredAttractions] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [filteredAccommodations, setFilteredAccommodations] = useState([]);
-
+  const [userPickedPlaces, setUserPickedPlaces] = useState([]); // 로그인한 유저가 찜한 목록 저장
   const setCurLevel = useSetRecoilState(curLevelState);
   const setCurCenter = useSetRecoilState(curCenterState);
 
@@ -172,6 +172,29 @@ const SelectMoreRegion = () => {
   //   console.log("지역 내의 여행지 정보들을 받아옵니다", attractionList);
   // }, [attractionList]);
 
+  // 컴포넌트가 시작 시 해당 유저가 찜한 지역 목록 가져오기
+
+  // fetchData 함수 밖으로 빼기
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost/api/interests", {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      console.log("해당 유저가 찜한 목록 :", response.data);
+
+      setUserPickedPlaces(response.data); // userPickedPlaces에 저장
+      console.log("userPickedPlaces 업데이트함 ", response.data);
+    } catch (error) {
+      console.error("유저 찜 목록 가져오기 실패", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [loginToken]);
+
   const moveLocation = (title, address, lat, lng) => {
     console.log(title, address, lat, lng);
 
@@ -212,7 +235,8 @@ const SelectMoreRegion = () => {
           body: myPlaceData,
         }
       );
-      console.log(response);
+      console.log("찜 등록 요청 성공:", response);
+      console.log(userPickedPlaces);
     } catch (error) {
       console.error("찜 등록 요청 에러 ", error);
     }
@@ -228,7 +252,8 @@ const SelectMoreRegion = () => {
           },
         }
       );
-      console.log(response);
+      console.log("찜 해제 요청 성공:", response);
+      console.log(userPickedPlaces);
     } catch (error) {
       console.error("찜 해제 요청 에러 ", error);
     }
@@ -236,17 +261,21 @@ const SelectMoreRegion = () => {
 
   // 명소 하트 클릭 시
   const handleClickMyAttraction = (myPlace) => {
-    if ([...myAttrationList].includes(myPlace)) {
-      const filteredAttractionList = [...myAttrationList].filter(
-        (v) => v !== myPlace
-      );
-      setMyAttractionList(new Set(filteredAttractionList));
+    fetchData();
+    if (userPickedPlaces.map((v) => v.id).includes(myPlace.id)) {
+      // // 로그인 안한 유저들
+      // const filteredAttractionList = [...myAttrationList].filter(
+      //   (v) => v !== myPlace
+      // );
+      // setMyAttractionList(new Set(filteredAttractionList));
       // DB에 명소 해제 요청
       deleteMyPick(myPlace);
+      fetchData();
     } else {
-      setMyAttractionList((prev) => new Set([...prev, myPlace]));
+      // setMyAttractionList((prev) => new Set([...prev, myPlace]));
       // DB에 내 PICK 등록 요청
       registMyPick(myPlace);
+      fetchData();
     }
   };
 
@@ -335,11 +364,15 @@ const SelectMoreRegion = () => {
                   type="primary"
                   icon={
                     // [...myAttrationList].find((item) => item.id === el.id) ||
-                    el.interest ? <HeartFilled /> : <HeartOutlined />
+                    userPickedPlaces.map((v) => v.id).includes(el.id) ? (
+                      <HeartFilled />
+                    ) : (
+                      <HeartOutlined />
+                    )
                   }
                   size="small"
                   style={
-                    [...myAttrationList].find((item) => item.id === el.id)
+                    userPickedPlaces.map((v) => v.id).includes(el.id)
                       ? {
                           backgroundColor: "rgb(255, 88, 88)",
                           marginRight: "0.5rem",
@@ -424,11 +457,15 @@ const SelectMoreRegion = () => {
                   type="primary"
                   icon={
                     // [...myAttrationList].find((item) => item.id === el.id) ||
-                    el.interest ? <HeartFilled /> : <HeartOutlined />
+                    userPickedPlaces.map((v) => v.id).includes(el.id) ? (
+                      <HeartFilled />
+                    ) : (
+                      <HeartOutlined />
+                    )
                   }
                   size="small"
                   style={
-                    [...myAttrationList].find((item) => item.id === el.id)
+                    userPickedPlaces.map((v) => v.id).includes(el.id)
                       ? {
                           backgroundColor: "rgb(255, 88, 88)",
                           marginRight: "0.5rem",
@@ -517,7 +554,7 @@ const SelectMoreRegion = () => {
                 className="heart-btn"
                 type="primary"
                 icon={
-                  [...myRestaurantList].find((item) => item.id === el.id) ? (
+                  userPickedPlaces.map((v) => v.id).includes(el.id) ? (
                     <HeartFilled />
                   ) : (
                     <HeartOutlined />
@@ -525,7 +562,7 @@ const SelectMoreRegion = () => {
                 }
                 size="small"
                 style={
-                  [...myRestaurantList].find((item) => item.id === el.id)
+                  userPickedPlaces.map((v) => v.id).includes(el.id)
                     ? { backgroundColor: "#FF0000", marginRight: "0.5rem" }
                     : { backgroundColor: "#E0E0E0", marginRight: "0.5rem" }
                 }
@@ -599,7 +636,7 @@ const SelectMoreRegion = () => {
                 className="heart-btn"
                 type="primary"
                 icon={
-                  [...myAccomodationList].find((item) => item.id === el.id) ? (
+                  userPickedPlaces.map((v) => v.id).includes(el.id) ? (
                     <HeartFilled />
                   ) : (
                     <HeartOutlined />
@@ -607,7 +644,7 @@ const SelectMoreRegion = () => {
                 }
                 size="small"
                 style={
-                  [...myAccomodationList].find((item) => item.id === el.id)
+                  userPickedPlaces.map((v) => v.id).includes(el.id)
                     ? { backgroundColor: "#FF0000", marginRight: "0.5rem" }
                     : { backgroundColor: "#E0E0E0", marginRight: "0.5rem" }
                 }
