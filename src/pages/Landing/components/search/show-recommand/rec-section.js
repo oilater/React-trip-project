@@ -53,7 +53,7 @@ const Recommand = () => {
   const [pickedPlace, setPickedPlace] = useState({});
 
   const keywordArr = Array.from(keywordValue); // 선택한 keyword를 서버로 넘기기 위해 keyword Set을 배열로 변환
-  console.log(keywordArr);
+  // console.log(keywordArr);
   // keywordCodes 쿼리 생성
   const keywordQueryString = keywordArr
     .map((keyword) => `keywordCodes=${encodeURIComponent(keyword.code)}`)
@@ -86,6 +86,8 @@ const Recommand = () => {
       setIsAlert(false);
     }, 1500);
     setPickedPlaces((prev) => new Set([...prev, pickedPlace])); // pickedPlaces (Set 자료구조)에 해당 여행지 넣기
+    console.log("picked!");
+    console.log("pickedPlaces: ", pickedPlaces);
   };
 
   return (

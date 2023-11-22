@@ -7,7 +7,7 @@
   
 .bg-video {
   position: absolute;
-  z-index: -5;
+  z-index: -100;
 }
 
   /* 메인 nav */
@@ -85,10 +85,9 @@
   
   /* 여행지 검색하러 가기 */
   .go-search {
-    position: relative;
-    left: 3.5rem;
+    position: inherit;
+    padding-left: 3rem;
     margin-top: 29.5rem;
-    z-index: 0;
   }
   
   .go-search-btn {

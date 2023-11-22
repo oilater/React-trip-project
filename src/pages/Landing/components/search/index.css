@@ -20,12 +20,12 @@
 
 .select-region {
     width: 100%;
-    /* position: relative; */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding-top: 13rem;   
+    z-index: -1;
 }
 
 .selected-region {
@@ -195,6 +195,7 @@
 
 /* 지역 선택  */
 .next-btn-div {
+    position: inherit;
     padding: 5rem;
 }
 

@@ -12,12 +12,7 @@ import { myRestaurantListState } from "../../../../atoms/myPick";
 import { myAccomodationListState } from "../../../../atoms/myPick";
 import { loginTokenState } from "../../../../atoms/login";
 import { Tabs, Input, Card, Button, Modal, Carousel } from "antd";
-import {
-  PlusOutlined,
-  CheckOutlined,
-  HeartOutlined,
-  HeartFilled,
-} from "@ant-design/icons";
+import { PlusOutlined, CheckOutlined, HeartOutlined, HeartFilled } from "@ant-design/icons";
 
 import "./index.css";
 
@@ -27,8 +22,6 @@ const onChange = (key) => {
 };
 
 // 이전에 슬라이드에서 Pick한 장소는 pickedPlace에 저장되어 있음
-
-// const onSearch = (value, _e, info) => console.log(info?.source, value);
 
 const SelectMoreRegion = () => {
   const [open, setOpen] = useState(false); // 모달창 상태
@@ -41,6 +34,10 @@ const SelectMoreRegion = () => {
   const [restaurantList, setRestaurantList] = useState([]); // 비동기로 받을 현재 지역의 음식점 목록
   const [accomodationList, setAccomodationList] = useState([]); // 비동기로 받을 현재 지역의 숙소 목록
   const [searchValue, setSearchValue] = useState(""); // 유저가 검색창에 입력한 값
+
+  // 검색창
+  const [searchedAttractionList, setSearchedAttractionList] = useState([]);
+  const [isSearch, setIsSearch] = useState(false); // 서치 여부
   // 무한 스크롤
   const [attractionsData, setAttractionsData] = useState([]);
   const [restaurantsData, setRestaurantsData] = useState([]);
@@ -57,15 +54,9 @@ const SelectMoreRegion = () => {
   const setCurCenter = useSetRecoilState(curCenterState);
 
   // 내가 픽한 명소, 식당, 숙소 리스트 (마이페이지)
-  const [myAttrationList, setMyAttractionList] = useRecoilState(
-    myAttractionListState
-  );
-  const [myRestaurantList, setMyRestaurantList] = useRecoilState(
-    myRestaurantListState
-  );
-  const [myAccomodationList, setMyAccomodationList] = useRecoilState(
-    myAccomodationListState
-  );
+  const [myAttrationList, setMyAttractionList] = useRecoilState(myAttractionListState);
+  const [myRestaurantList, setMyRestaurantList] = useRecoilState(myRestaurantListState);
+  const [myAccomodationList, setMyAccomodationList] = useRecoilState(myAccomodationListState);
 
   // 유저 로그인 토큰
   const loginToken = useRecoilValue(loginTokenState);
@@ -73,17 +64,41 @@ const SelectMoreRegion = () => {
   // 이전에 추천 슬라이드에서 유저가 Pick 했던 것 : Set -> 배열 변환
   const pickedPlacesArr = Array.from(pickedPlaces);
 
+  // const onSearch = (value, _e, info) => console.log(info?.source, value);
+  // 검색창 -> 장소 검색
+  const handleSearch = (value) => {
+    console.log(value);
+    setSearchValue(value);
+
+    loadSearchedAttractionsData(value);
+  };
+
+  // 인풋창의 값으로 검색했을 때 보여줄 장소 목록
+  const loadSearchedAttractionsData = async (value) => {
+    try {
+      const searchedAttraction = await axios.get(
+        `http://localhost/api/map/attractions?&type=1&page=${0}&cityCode=${curRegion.code}&title=${value}`
+      );
+
+      console.log("해당 검색으로 찾은 항목들", searchedAttraction.data);
+      setSearchedAttractionList(searchedAttraction.data); // 검색해서 받아온 리스트를 state에 세팅
+      setIsSearch(true);
+    } catch (error) {
+      console.error("검색 에러: ", error);
+    }
+  };
+
   // 명소 : 데이터 로딩 및 데이터 추가
   const loadAttractionsData = async () => {
     try {
       const responseAttraction = await axios.get(
-        `http://localhost/api/map/attractions?&type=1&page=${attractionPage}&cityCode=${curRegion.code}`
+        `http://localhost/api/map/attractions?&type=1&page=${attractionPage}&cityCode=${curRegion.code}&title=${searchValue}`
       );
 
       setAttractionPage((prev) => prev + 1); // 페이지 증가
 
       console.log("responseAttraction :::", responseAttraction);
-
+      console.log("이전 슬라이더에서 픽한 곳들: ", pickedPlacesArr);
       const filteredAttractionList = responseAttraction.data.filter((el) => {
         for (let i = 0; i < pickedPlacesArr.length; i++) {
           if (el.title === pickedPlacesArr[i].title) return false;
@@ -96,15 +111,16 @@ const SelectMoreRegion = () => {
       console.error("명소 : 다음 페이지 장소 불러오기 error", error);
     }
   };
-  /////
+  ////
   useEffect(() => {
     console.log("페이지:", attractionPage);
   }, [attractionPage]);
+
   // 식당 : 추가 데이터 로딩 및 데이터 추가
   const loadRestaurantsData = async () => {
     try {
       const responseRestaurant = await axios.get(
-        `http://localhost/api/map/attractions?&type=2&page=${restaurantPage}&cityCode=${curRegion.code}`
+        `http://localhost/api/map/attractions?&type=2&page=${restaurantPage}&cityCode=${curRegion.code}&title=${searchValue}`
       );
 
       return responseRestaurant.data;
@@ -131,12 +147,11 @@ const SelectMoreRegion = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [attractionsData, restaurantsData, accomodationsData] =
-          await Promise.all([
-            loadAttractionsData(),
-            loadRestaurantsData(),
-            loadAccomodationsData(),
-          ]);
+        const [attractionsData, restaurantsData, accomodationsData] = await Promise.all([
+          loadAttractionsData(),
+          loadRestaurantsData(),
+          loadAccomodationsData(),
+        ]);
 
         // 데이터 처리 로직
         setAttractionsData(attractionsData);
@@ -168,13 +183,7 @@ const SelectMoreRegion = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("지역 내의 여행지 정보들을 받아옵니다", attractionList);
-  // }, [attractionList]);
-
-  // 컴포넌트가 시작 시 해당 유저가 찜한 지역 목록 가져오기
-
-  // fetchData 함수 밖으로 빼기
+  // 컴포넌트가 시작 시 해당 유저가 찜한 지역 목록 가져오기 => fetchData 함수는 업데이트 해야 해서 밖으로 빼기
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost/api/interests", {
@@ -194,6 +203,13 @@ const SelectMoreRegion = () => {
   useEffect(() => {
     fetchData();
   }, [loginToken]);
+
+  useEffect(() => {
+    if (isSearch === true && searchValue === "") {
+      setIsSearch(false);
+      setAttractionPage(1);
+    }
+  }, []);
 
   const moveLocation = (title, address, lat, lng) => {
     console.log(title, address, lat, lng);
@@ -225,16 +241,12 @@ const SelectMoreRegion = () => {
         attractionId: myPlace.id,
       };
       //토큰담기
-      const response = await axios.post(
-        "http://localhost/api/interest/",
-        myPlaceData,
-        {
-          headers: {
-            Authorization: `Bearer ${loginToken}`,
-          },
-          body: myPlaceData,
-        }
-      );
+      const response = await axios.post("http://localhost/api/interest/", myPlaceData, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+        body: myPlaceData,
+      });
       console.log("찜 등록 요청 성공:", response);
       console.log(userPickedPlaces);
     } catch (error) {
@@ -244,20 +256,21 @@ const SelectMoreRegion = () => {
 
   const deleteMyPick = async (myPlace) => {
     try {
-      const response = await axios.delete(
-        `http://localhost/api/interest/${myPlace.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${loginToken}`,
-          },
-        }
-      );
+      const response = await axios.delete(`http://localhost/api/interest/${myPlace.id}`, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
       console.log("찜 해제 요청 성공:", response);
       console.log(userPickedPlaces);
     } catch (error) {
       console.error("찜 해제 요청 에러 ", error);
     }
   };
+
+  useEffect(() => {
+    console.log(pickedPlacesArr);
+  }, [isSearch]);
 
   // 명소 하트 클릭 시
   const handleClickMyAttraction = (myPlace) => {
@@ -282,9 +295,7 @@ const SelectMoreRegion = () => {
   // 식당 하트 클릭 시
   const handleClickMyRestaurant = (myPlace) => {
     if ([...myRestaurantList].includes(myPlace)) {
-      const filteredRestaurantList = [...myRestaurantList].filter(
-        (v) => v !== myPlace
-      );
+      const filteredRestaurantList = [...myRestaurantList].filter((v) => v !== myPlace);
       setMyRestaurantList(new Set(filteredRestaurantList));
       // DB에 명소 해제 요청
       deleteMyPick(myPlace);
@@ -298,9 +309,7 @@ const SelectMoreRegion = () => {
   // 숙소 하트 클릭 시
   const handleClickMyAccomodation = (myPlace) => {
     if ([...myAccomodationList].includes(myPlace)) {
-      const filteredAccomodationList = [...myAccomodationList].filter(
-        (v) => v !== myPlace
-      );
+      const filteredAccomodationList = [...myAccomodationList].filter((v) => v !== myPlace);
       setMyAccomodationList(new Set(filteredAccomodationList));
       // DB에 명소 해제 요청
       deleteMyPick(myPlace);
@@ -319,200 +328,262 @@ const SelectMoreRegion = () => {
     {
       key: "1",
       label: "관광지",
-      children: [
-        // 먼저 사용자가 PICK한 여행지들이 상단에 뜨도록 함
-        pickedPlacesArr.map((el) => (
-          <Card
-            className="antd-card"
-            key={el.id}
-            style={{
-              width: 450,
-              marginTop: 5,
-              cursor: "pointer",
-            }}
-            onClick={(e) => {
-              if (e.target.closest(".add-btn") == null) {
-                setOpen(true);
-                handleModal(el);
-              } else {
-                setOpen(false);
-                // pickedPlaceArr에서도 하트 버튼 눌렀을 때는 내가 선택한 장소 리스트에 추가되면 안된다.
-                if (e.target.closest(".heart-btn") == null) {
-                  handleSelectPlace(el);
+      children: !isSearch // 검색하지 않았다면
+        ? // 먼저 사용자가 PICK한 여행지들이 상단에 뜨도록 함
+          [
+            ...pickedPlacesArr.map((el) => (
+              <Card
+                className="antd-card"
+                key={el.id}
+                style={{
+                  width: 450,
+                  marginTop: 5,
+                  cursor: "pointer",
+                }}
+                onClick={(e) => {
+                  if (e.target.closest(".add-btn") == null) {
+                    setOpen(true);
+                    handleModal(el);
+                  } else {
+                    setOpen(false);
+                    // pickedPlaceArr에서도 하트 버튼 눌렀을 때는 내가 선택한 장소 리스트에 추가되면 안된다.
+                    if (e.target.closest(".heart-btn") == null) {
+                      handleSelectPlace(el);
+                    }
+                  }
+                }}
+              >
+                <div className="card">
+                  <img
+                    style={{
+                      width: "4.5rem",
+                      height: "4.5rem",
+                      borderRadius: 16,
+                    }}
+                    src={el.mainImagePath}
+                    alt="카드 장소 이미지"
+                  />
+                  <div className="card-text-wrapper">
+                    <div id="title" className="card-title">
+                      {el.title}
+                    </div>
+                    <div id="address" className="card-address">
+                      {el.address}
+                    </div>
+                  </div>
+                  <div className="add-btn">
+                    {/* 하트 버튼 */}
+                    <Button
+                      className="heart-btn"
+                      type="primary"
+                      icon={
+                        // [...myAttrationList].find((item) => item.id === el.id) ||
+                        userPickedPlaces.map((v) => v.id).includes(el.id) ? <HeartFilled /> : <HeartOutlined />
+                      }
+                      size="small"
+                      style={
+                        userPickedPlaces.map((v) => v.id).includes(el.id)
+                          ? {
+                              backgroundColor: "rgb(255, 88, 88)",
+                              marginRight: "0.5rem",
+                            }
+                          : {
+                              backgroundColor: "#E0E0E0",
+                              marginRight: "0.5rem",
+                            }
+                      }
+                      onClick={() => {
+                        handleClickMyAttraction(el);
+                        moveLocation(el.title, el.address, el.latitude, el.longitude);
+                      }}
+                    />
+                    {/* 플러스 버튼 */}
+                    <Button
+                      type="primary"
+                      icon={pickedRegion.find((item) => item.id === el.id) ? <CheckOutlined /> : <PlusOutlined />}
+                      size="small"
+                      style={
+                        pickedRegion.find((item) => item.id === el.id)
+                          ? { backgroundColor: "dodgerblue" }
+                          : { backgroundColor: "#E0E0E0" }
+                      }
+                      onClick={() => {
+                        handleSelectPlace(el);
+                        moveLocation(el.title, el.address, el.latitude, el.longitude);
+                      }}
+                    />
+                  </div>
+                </div>
+              </Card>
+            )),
+            // 이제 DB에서 넘어온 해당 지역 관광지들 정보 리스트화
+            ...attractionsData.map((el) => (
+              <Card
+                className="antd-card"
+                key={el.id}
+                style={{
+                  width: 450,
+                  marginTop: 5,
+                  cursor: "pointer",
+                }}
+                onClick={(e) => {
+                  if (e.target.closest(".add-btn") == null) {
+                    setOpen(true);
+                    handleModal(el);
+                  } else setOpen(false);
+                }}
+              >
+                <div className="card">
+                  <img
+                    style={{
+                      width: "4.5rem",
+                      height: "4.5rem",
+                      borderRadius: 15,
+                    }}
+                    src={el.mainImagePath}
+                    alt="카드 장소 이미지"
+                  />
+                  <div className="card-text-wrapper">
+                    <div id="title" className="card-title">
+                      {el.title}
+                    </div>
+                    <div id="address" className="card-address">
+                      {el.address}
+                    </div>
+                  </div>
+                  <div className="add-btn">
+                    {/* 하트 버튼 */}
+                    <Button
+                      className="heart-btn"
+                      type="primary"
+                      icon={
+                        // [...myAttrationList].find((item) => item.id === el.id) ||
+                        userPickedPlaces.map((v) => v.id).includes(el.id) ? <HeartFilled /> : <HeartOutlined />
+                      }
+                      size="small"
+                      style={
+                        userPickedPlaces.map((v) => v.id).includes(el.id)
+                          ? {
+                              backgroundColor: "rgb(255, 88, 88)",
+                              marginRight: "0.5rem",
+                            }
+                          : {
+                              backgroundColor: "#E0E0E0",
+                              marginRight: "0.5rem",
+                            }
+                      }
+                      onClick={() => {
+                        handleClickMyAttraction(el);
+                        moveLocation(el.title, el.address, el.latitude, el.longitude);
+                      }}
+                    />
+                    {/* 플러스 버튼 */}
+                    <Button
+                      type="primary"
+                      icon={
+                        pickedRegion.find((item) => item.id === el.id) !== null ? <CheckOutlined /> : <PlusOutlined />
+                      }
+                      size="small"
+                      style={
+                        pickedRegion.find((item) => item.id === el.id)
+                          ? { backgroundColor: "dodgerblue" }
+                          : { backgroundColor: "#E0E0E0" }
+                      }
+                      onClick={() => {
+                        handleSelectPlace(el);
+                        moveLocation(el.title, el.address, el.latitude, el.longitude);
+                      }}
+                    />
+                  </div>
+                </div>
+              </Card>
+            )),
+          ]
+        : searchedAttractionList.map((el) => (
+            <Card
+              className="antd-card"
+              key={el.id}
+              style={{
+                width: 450,
+                marginTop: 5,
+                cursor: "pointer",
+              }}
+              onClick={(e) => {
+                if (e.target.closest(".add-btn") == null) {
+                  setOpen(true);
+                  handleModal(el);
+                } else {
+                  setOpen(false);
+                  // pickedPlaceArr에서도 하트 버튼 눌렀을 때는 내가 선택한 장소 리스트에 추가되면 안된다.
+                  if (e.target.closest(".heart-btn") == null) {
+                    handleSelectPlace(el);
+                  }
                 }
-              }
-            }}
-          >
-            <div className="card">
-              <img
-                style={{ width: "4.5rem", height: "4.5rem", borderRadius: 16 }}
-                src={el.mainImagePath}
-                alt="카드 장소 이미지"
-              />
-              <div className="card-text-wrapper">
-                <div id="title" className="card-title">
-                  {el.title}
-                </div>
-                <div id="address" className="card-address">
-                  {el.address}
-                </div>
-              </div>
-              <div className="add-btn">
-                {/* 하트 버튼 */}
-                <Button
-                  className="heart-btn"
-                  type="primary"
-                  icon={
-                    // [...myAttrationList].find((item) => item.id === el.id) ||
-                    userPickedPlaces.map((v) => v.id).includes(el.id) ? (
-                      <HeartFilled />
-                    ) : (
-                      <HeartOutlined />
-                    )
-                  }
-                  size="small"
-                  style={
-                    userPickedPlaces.map((v) => v.id).includes(el.id)
-                      ? {
-                          backgroundColor: "rgb(255, 88, 88)",
-                          marginRight: "0.5rem",
-                        }
-                      : { backgroundColor: "#E0E0E0", marginRight: "0.5rem" }
-                  }
-                  onClick={() => {
-                    handleClickMyAttraction(el);
-                    moveLocation(
-                      el.title,
-                      el.address,
-                      el.latitude,
-                      el.longitude
-                    );
+              }}
+            >
+              <div className="card">
+                <img
+                  style={{
+                    width: "4.5rem",
+                    height: "4.5rem",
+                    borderRadius: 16,
                   }}
+                  src={el.mainImagePath}
+                  alt="카드 장소 이미지"
                 />
-                {/* 플러스 버튼 */}
-                <Button
-                  type="primary"
-                  icon={
-                    pickedRegion.find((item) => item.id === el.id) ? (
-                      <CheckOutlined />
-                    ) : (
-                      <PlusOutlined />
-                    )
-                  }
-                  size="small"
-                  style={
-                    pickedRegion.find((item) => item.id === el.id)
-                      ? { backgroundColor: "dodgerblue" }
-                      : { backgroundColor: "#E0E0E0" }
-                  }
-                  onClick={() => {
-                    handleSelectPlace(el);
-                    moveLocation(
-                      el.title,
-                      el.address,
-                      el.latitude,
-                      el.longitude
-                    );
-                  }}
-                />
-              </div>
-            </div>
-          </Card>
-        )),
-        // 이제 DB에서 넘어온 해당 지역 관광지들 정보 리스트화
-        attractionsData.map((el) => (
-          <Card
-            className="antd-card"
-            key={el.id}
-            style={{
-              width: 450,
-              marginTop: 5,
-              cursor: "pointer",
-            }}
-            onClick={(e) => {
-              if (e.target.closest(".add-btn") == null) {
-                setOpen(true);
-                handleModal(el);
-              } else setOpen(false);
-            }}
-          >
-            <div className="card">
-              <img
-                style={{ width: "4.5rem", height: "4.5rem", borderRadius: 15 }}
-                src={el.mainImagePath}
-                alt="카드 장소 이미지"
-              />
-              <div className="card-text-wrapper">
-                <div id="title" className="card-title">
-                  {el.title}
+                <div className="card-text-wrapper">
+                  <div id="title" className="card-title">
+                    {el.title}
+                  </div>
+                  <div id="address" className="card-address">
+                    {el.address}
+                  </div>
                 </div>
-                <div id="address" className="card-address">
-                  {el.address}
+                <div className="add-btn">
+                  {/* 하트 버튼 */}
+                  <Button
+                    className="heart-btn"
+                    type="primary"
+                    icon={
+                      // [...myAttrationList].find((item) => item.id === el.id) ||
+                      userPickedPlaces.map((v) => v.id).includes(el.id) ? <HeartFilled /> : <HeartOutlined />
+                    }
+                    size="small"
+                    style={
+                      userPickedPlaces.map((v) => v.id).includes(el.id)
+                        ? {
+                            backgroundColor: "rgb(255, 88, 88)",
+                            marginRight: "0.5rem",
+                          }
+                        : {
+                            backgroundColor: "#E0E0E0",
+                            marginRight: "0.5rem",
+                          }
+                    }
+                    onClick={() => {
+                      handleClickMyAttraction(el);
+                      moveLocation(el.title, el.address, el.latitude, el.longitude);
+                    }}
+                  />
+                  {/* 플러스 버튼 */}
+                  <Button
+                    type="primary"
+                    icon={pickedRegion.find((item) => item.id === el.id) ? <CheckOutlined /> : <PlusOutlined />}
+                    size="small"
+                    style={
+                      pickedRegion.find((item) => item.id === el.id)
+                        ? { backgroundColor: "dodgerblue" }
+                        : { backgroundColor: "#E0E0E0" }
+                    }
+                    onClick={() => {
+                      handleSelectPlace(el);
+                      moveLocation(el.title, el.address, el.latitude, el.longitude);
+                    }}
+                  />
                 </div>
               </div>
-              <div className="add-btn">
-                {/* 하트 버튼 */}
-                <Button
-                  className="heart-btn"
-                  type="primary"
-                  icon={
-                    // [...myAttrationList].find((item) => item.id === el.id) ||
-                    userPickedPlaces.map((v) => v.id).includes(el.id) ? (
-                      <HeartFilled />
-                    ) : (
-                      <HeartOutlined />
-                    )
-                  }
-                  size="small"
-                  style={
-                    userPickedPlaces.map((v) => v.id).includes(el.id)
-                      ? {
-                          backgroundColor: "rgb(255, 88, 88)",
-                          marginRight: "0.5rem",
-                        }
-                      : { backgroundColor: "#E0E0E0", marginRight: "0.5rem" }
-                  }
-                  onClick={() => {
-                    handleClickMyAttraction(el);
-                    moveLocation(
-                      el.title,
-                      el.address,
-                      el.latitude,
-                      el.longitude
-                    );
-                  }}
-                />
-                {/* 플러스 버튼 */}
-                <Button
-                  type="primary"
-                  icon={
-                    pickedRegion.find((item) => item.id === el.id) !== null ? (
-                      <CheckOutlined />
-                    ) : (
-                      <PlusOutlined />
-                    )
-                  }
-                  size="small"
-                  style={
-                    pickedRegion.find((item) => item.id === el.id)
-                      ? { backgroundColor: "dodgerblue" }
-                      : { backgroundColor: "#E0E0E0" }
-                  }
-                  onClick={() => {
-                    handleSelectPlace(el);
-                    moveLocation(
-                      el.title,
-                      el.address,
-                      el.latitude,
-                      el.longitude
-                    );
-                  }}
-                />
-              </div>
-            </div>
-          </Card>
-        )),
-      ],
+            </Card>
+          )),
     },
     // type 2: 식당 section
     {
@@ -553,13 +624,7 @@ const SelectMoreRegion = () => {
               <Button
                 className="heart-btn"
                 type="primary"
-                icon={
-                  userPickedPlaces.map((v) => v.id).includes(el.id) ? (
-                    <HeartFilled />
-                  ) : (
-                    <HeartOutlined />
-                  )
-                }
+                icon={userPickedPlaces.map((v) => v.id).includes(el.id) ? <HeartFilled /> : <HeartOutlined />}
                 size="small"
                 style={
                   userPickedPlaces.map((v) => v.id).includes(el.id)
@@ -574,13 +639,7 @@ const SelectMoreRegion = () => {
               {/* 플러스 버튼 */}
               <Button
                 type="primary"
-                icon={
-                  pickedRegion.find((item) => item.id === el.id) !== null ? (
-                    <CheckOutlined />
-                  ) : (
-                    <PlusOutlined />
-                  )
-                }
+                icon={pickedRegion.find((item) => item.id === el.id) !== null ? <CheckOutlined /> : <PlusOutlined />}
                 size="small"
                 style={
                   pickedRegion.find((item) => item.id === el.id)
@@ -635,13 +694,7 @@ const SelectMoreRegion = () => {
               <Button
                 className="heart-btn"
                 type="primary"
-                icon={
-                  userPickedPlaces.map((v) => v.id).includes(el.id) ? (
-                    <HeartFilled />
-                  ) : (
-                    <HeartOutlined />
-                  )
-                }
+                icon={userPickedPlaces.map((v) => v.id).includes(el.id) ? <HeartFilled /> : <HeartOutlined />}
                 size="small"
                 style={
                   userPickedPlaces.map((v) => v.id).includes(el.id)
@@ -656,13 +709,7 @@ const SelectMoreRegion = () => {
               {/* 플러스 버튼 */}
               <Button
                 type="primary"
-                icon={
-                  pickedRegion.find((item) => item.id === el.id) !== null ? (
-                    <CheckOutlined />
-                  ) : (
-                    <PlusOutlined />
-                  )
-                }
+                icon={pickedRegion.find((item) => item.id === el.id) !== null ? <CheckOutlined /> : <PlusOutlined />}
                 size="small"
                 style={
                   pickedRegion.find((item) => item.id === el.id)
@@ -731,7 +778,7 @@ const SelectMoreRegion = () => {
         <div className="region-search-bar">
           <Search
             placeholder="장소명을 입력하세요"
-            // onSearch={onSearch}
+            onSearch={handleSearch}
             onChange={(e) => setSearchValue(e.target.value)}
             style={{
               width: 450,

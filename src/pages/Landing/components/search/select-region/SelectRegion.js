@@ -11,6 +11,8 @@ import { regionInputState } from "../../../../../atoms/userInputData";
 import { curCenterState } from "../../../../../atoms/map";
 import AnimatedPage from "../../../../../animations/AnimatedPage";
 import { pickedPlacesState } from "../../../../../atoms/pickedPlaceList";
+import Loading from "../../../../../Loading";
+
 const { Option } = Select;
 
 const SelectRegion = () => {
@@ -22,6 +24,7 @@ const SelectRegion = () => {
   const setCenter = useSetRecoilState(curCenterState);
   const setPickedPlaces = useSetRecoilState(pickedPlacesState);
   const [regionData, setRegionData] = useRecoilState(regionInputState);
+  const [loading, setLoading] = useState(true);
 
   const handleKeywordModal = () => {
     setIsKeywordModalOpen(true);
@@ -30,14 +33,16 @@ const SelectRegion = () => {
   };
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true); // api 호출 전 로딩화면 띄우기
       try {
         const response = await axios.get("http://localhost/api/cities");
         setRegionList(response.data);
+        setLoading(false); // api 호출 완료되었을 때는 로딩화면 숨기기
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    fetchData(); // Call the async function inside the effect
+    fetchData();
   }, []);
 
   // 각 도시의 위도, 경도 정보 (인덱스로 접근하기에 0번은 비워둠)
@@ -88,7 +93,7 @@ const SelectRegion = () => {
   // 유저가 선택한 지역이 바뀐다면 pickedPlaces 초기화
   useEffect(() => {
     setPickedPlaces(() => new Set());
-    console.log("set 초기화 : 컴포넌트 시작될때는 안하겠지?");
+    console.log("pickedPlaces 초기화");
   }, [regionData, setPickedPlaces]);
 
   const handleChange = (obj) => {
@@ -101,6 +106,7 @@ const SelectRegion = () => {
   };
   return (
     <AnimatedPage>
+      {loading ? <Loading /> : null}
       {regionList ? (
         <div className="select-region">
           <Select

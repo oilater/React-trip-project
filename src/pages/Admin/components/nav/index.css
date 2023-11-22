@@ -1,0 +1,32 @@
+.admin-logo {
+    width: 5rem;
+}
+
+.admin-nav {
+    display: flex;
+    margin: 0 auto;
+    max-width: 1240px;
+    height: 5rem;
+    color: black;
+    align-items: center;
+    font-size: 1.3rem;
+  }
+  
+.admin-nav-menu {
+    display: flex;
+    justify-content: center;
+}
+  
+.admin-nav-menu ul {
+    display: flex;
+    justify-content: space-between;
+}
+.admin-nav-menu li {
+    width: 5rem;
+    height: 100%;
+}
+
+.admin-nav-menu li:first-child {
+    width: 10rem;
+    height: 100%;
+}
