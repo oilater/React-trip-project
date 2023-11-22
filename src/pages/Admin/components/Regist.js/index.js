@@ -1,4 +1,5 @@
 import "./index.css";
+import axios from "axios";
 import { useState } from "react";
 const { kakao, daum } = window;
 
@@ -7,33 +8,29 @@ const Regist = () => {
   var geocoder = new kakao.maps.services.Geocoder();
   var callback = function (result, status) {
     if (status === kakao.maps.services.Status.OK) {
-      const x = result[0].road_address.x; //위도
-      const y = result[0].road_address.y; //경도
+      setLatitude(result[0].road_address.x); //위도
+      setLongitude(result[0].road_address.y); //경도
       const bCode = result[0].address.b_code.toString(); //법정 코드
-      let cityCode = 0;
-      document.getElementById("latitude").value = x;
-      document.getElementById("longitude").value = y;
 
       if (bCode.startsWith("11")) {
-        cityCode = 1;
+        setCityCode(1);
       } else if (bCode.startsWith("50")) {
-        cityCode = 2;
+        setCityCode(2);
       } else if (bCode.startsWith("26")) {
-        cityCode = 3;
+        setCityCode(3);
       } else if (bCode.startsWith("47130")) {
-        cityCode = 4;
+        setCityCode(4);
       } else if (bCode.startsWith("51150")) {
-        cityCode = 5;
+        setCityCode(5);
       } else if (bCode.startsWith("46130")) {
-        cityCode = 6;
+        setCityCode(6);
       } else if (bCode.startsWith("30")) {
-        cityCode = 7;
+        setCityCode(7);
       } else if (bCode.startsWith("41820")) {
-        cityCode = 8;
+        setCityCode(8);
       } else {
         alert("주소를 다시 입력해주세요!");
       }
-      document.getElementById("cityCode").value = cityCode;
     }
   };
 
@@ -64,7 +61,7 @@ const Regist = () => {
 
         // 우편번호와 주소 정보를 해당 필드에 넣는다.
         setPostNumber(data.zonecode);
-        setRoadNameAddress(data.roadAddr);
+        // setRoadNameAddress(roadAddr);
         setJibunAddress(data.jibunAddress);
 
         // 참고항목 문자열이 있을 경우 해당 필드에 넣는다.
@@ -89,49 +86,69 @@ const Regist = () => {
           guideTextBox.style.display = "none";
         }
 
-        const address = document.getElementById("sample4_roadAddress").value;
+        // const address = roadNameAddress;
+        const address = jibunAddress;
         geocoder.addressSearch(address, callback);
       },
     }).open();
   };
 
-  let registForm = document.getElementById("registForm");
-  console.log(registForm);
-  let url = "http://localhost/api/admin/attraction";
-  const headers = new Headers();
-  headers.append(
-    "Authorization",
-    "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImFkbWluIiwibmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzAwNTYyOTc2fQ.9fzPpvuv9r_3VrBB8VN2uJA08PwJ8SuSydQbnUOVkho"
-  );
-
   const handleFormSubmit = (e) => {
     e.preventDefault(); // form 의 기본 기능 막기
-    const formData = new FormData(registForm);
+
+    const formData = new FormData();
+    formData.append("type", type);
+    formData.append("title", title);
+    formData.append("address", jibunAddress);
+    formData.append("cityCode", cityCode);
+    formData.append("overview", overview);
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
+    formData.append("keywordCodes", [firstKeyword, secondKeyword, thirdKeyword]);
+    formData.append("mainImage", mainImgFile);
+    formData.append("images", subImgFile);
+
+    setRegistForm(formData);
 
     for (const entry of formData.entries()) {
       console.log(entry[0], entry[1]);
     }
-    const config = {
-      method: "post",
-      headers,
-      body: formData,
-    };
-    fetch(url, config).then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.post("http://localhost/api/admin/attraction", formData, {
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImFkbWluIiwibmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzAwNTYyOTc2fQ.9fzPpvuv9r_3VrBB8VN2uJA08PwJ8SuSydQbnUOVkho",
+          },
+        });
+
+        console.log(response);
+      } catch (error) {
+        console.error("관리자 장소 등록 요청 실패: ", error);
       }
-      alert("등록 완료!");
-      return response.text();
-    });
+    };
+
+    fetchData();
   };
   // 관리자 등록 로직
   const [type, setType] = useState(-1); // 관광지 타입 (명소, 식당, 숙소)
   const [title, setTitle] = useState(""); // 관광지 명
   const [postNumber, setPostNumber] = useState(""); // 우편 번호
-  const [roadNameAddress, setRoadNameAddress] = useState(""); // 도로명 주소
+  // const [roadNameAddress, setRoadNameAddress] = useState(""); // 도로명 주소
   const [jibunAddress, setJibunAddress] = useState(""); // 지번 주소
   const [detailAddress, setDetailAddress] = useState(""); // 상세 주소
   const [extraAddress, setExtraAddress] = useState(""); // 추가 주소
+  const [overview, setOverview] = useState(""); // 장소 설명
+  const [firstKeyword, setFirstKeyword] = useState(""); // 첫번째 키워드
+  const [secondKeyword, setSecondKeyword] = useState(""); // 두번째 키워드
+  const [thirdKeyword, setThirdKeyword] = useState(""); // 세번째 키워드
+  const [mainImgFile, setMainImgFile] = useState(null); // 대표 이미지
+  const [subImgFile, setSubImgFile] = useState(null); // 서브 이미지
+  const [registForm, setRegistForm] = useState(new FormData());
+  const [cityCode, setCityCode] = useState(-1); // 도시 코드
+  const [latitude, setLatitude] = useState(-1); // 위도
+  const [longitude, setLongitude] = useState(-1); // 경도
   // 타입 선택 처리
   const handleType = (e) => {
     console.log("선택한 관광지 타입: ", e.target.value);
@@ -142,9 +159,43 @@ const Regist = () => {
     setTitle(e.target.value);
   };
 
+  const handleOverview = (e) => {
+    setOverview(e.target.value);
+  };
+
+  const handleDetailAddress = (e) => {
+    setDetailAddress(e.target.value);
+  };
+
+  const handleExtraAddress = (e) => {
+    setExtraAddress(e.target.value);
+  };
+
+  const handleFirstKeyword = (e) => {
+    setFirstKeyword(e.target.value);
+  };
+
+  const handleSecondKeyword = (e) => {
+    setSecondKeyword(e.target.value);
+  };
+
+  const handleThirdKeyword = (e) => {
+    setThirdKeyword(e.target.value);
+  };
+
+  const handleMainImgFile = (e) => {
+    setMainImgFile(e.target.files[0]);
+  };
+
+  const handleSubImgFile = (e) => {
+    setSubImgFile(e.target.files[0]);
+  };
+
+  const handleSubmit = () => {};
+
   return (
     <div className="regist-form">
-      <form onsubmit={handleFormSubmit}>
+      <form onSubmit={handleFormSubmit}>
         <section className="input-content">
           <h2>관광지 등록</h2>
           <div>
@@ -163,27 +214,27 @@ const Regist = () => {
             </div>
 
             <div>
-              <input type="text" value={postNumber} placeholder="우편번호" readonly required />
+              <input type="text" value={postNumber} placeholder="우편번호" readOnly required />
               <input type="button" onClick={handleFindPostNumber} value="우편번호 찾기" />
             </div>
 
             <div>
-              <input type="text" value={roadNameAddress} placeholder="도로명주소" readonly required />
-              <input type="text" value={jibunAddress} placeholder="지번주소" readonly required />
+              {/* <input type="text" value={roadNameAddress} onChange={handleRoadNameAddress} placeholder="도로명주소" readOnly required /> */}
+              <input type="text" value={jibunAddress} placeholder="지번주소" readOnly required />
 
               <span id="guide" style={{ color: "#999", display: "none" }}></span>
 
-              <input type="text" value={detailAddress} placeholder="상세주소" />
-              <input type="text" value={extraAddress} placeholder="참고항목" />
+              <input type="text" value={detailAddress} onChange={handleDetailAddress} placeholder="상세주소" />
+              <input type="text" value={extraAddress} onChange={handleExtraAddress} placeholder="참고항목" />
             </div>
             <div className="inputbox">
               <label htmlFor="overview">설명 </label>
-              <input id="overview" type="text" name="overview" required />
+              <input value={overview} onChange={handleOverview} id="overview" type="text" name="overview" required />
             </div>
             <div>
               키워드 1
               <div className="select">
-                <select name="keywordCodes">
+                <select onChange={handleFirstKeyword} name="keywordCodes">
                   <option value="">선택안함</option>
                   <option value="1">바다</option>
                   <option value="2">산</option>
@@ -204,7 +255,7 @@ const Regist = () => {
             <div>
               키워드 2
               <div className="select">
-                <select name="keywordCodes">
+                <select onChange={handleSecondKeyword} name="keywordCodes">
                   <option value="">선택안함</option>
                   <option value="1">바다</option>
                   <option value="2">산</option>
@@ -225,7 +276,7 @@ const Regist = () => {
             <div>
               키워드 3
               <div className="select">
-                <select name="keywordCodes">
+                <select onChange={handleThirdKeyword} name="keywordCodes">
                   <option value="">선택안함</option>
                   <option value="1">바다</option>
                   <option value="2">산</option>
@@ -243,20 +294,20 @@ const Regist = () => {
                 </select>
               </div>
             </div>
-            <div className="inputbox">
+            <div className="main-img-div">
               대표 이미지
               <div className="inputbox-content">
-                <input id="input0" type="file" name="mainImage" required accept=".png, .jpg, .jpeg" />
+                <input type="file" onChange={handleMainImgFile} required accept=".png, .jpg, .jpeg" />
               </div>
             </div>
-            <div className="inputbox">
+            <div className="sub-img-div">
               서브 이미지
               <div className="inputbox-content">
-                <input id="input0" type="file" name="images" multiple accept=".png, .jpg, .jpeg" />
+                <input onChange={handleSubImgFile} type="file" name="images" multiple accept=".png, .jpg, .jpeg" />
               </div>
             </div>
             <div className="submit-btn-div">
-              <button className="btn btn-confirm" type="submit">
+              <button onClick={handleSubmit} className="btn btn-confirm" type="submit">
                 등록
               </button>
               <button className="btn btn-cancel">Cancel</button>
