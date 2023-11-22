@@ -1,6 +1,8 @@
 import "./index.css";
 import axios from "axios";
 import { useState } from "react";
+import { useRecoilValue } from "recoil";
+import { loginTokenState } from "../../../../atoms/login";
 const { kakao, daum } = window;
 
 const Regist = () => {
@@ -37,7 +39,7 @@ const Regist = () => {
   //본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
   const handleFindPostNumber = () => {
     new daum.Postcode({
-      oncomplete: function (data) {
+      onComplete: function (data) {
         console.log(data);
         // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
         // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
@@ -61,7 +63,7 @@ const Regist = () => {
 
         // 우편번호와 주소 정보를 해당 필드에 넣는다.
         setPostNumber(data.zonecode);
-        // setRoadNameAddress(roadAddr);
+        setRoadNameAddress(roadAddr);
         setJibunAddress(data.jibunAddress);
 
         // 참고항목 문자열이 있을 경우 해당 필드에 넣는다.
@@ -86,8 +88,8 @@ const Regist = () => {
           guideTextBox.style.display = "none";
         }
 
-        // const address = roadNameAddress;
-        const address = jibunAddress;
+        const address = roadNameAddress;
+        console.log(address);
         geocoder.addressSearch(address, callback);
       },
     }).open();
@@ -99,14 +101,21 @@ const Regist = () => {
     const formData = new FormData();
     formData.append("type", type);
     formData.append("title", title);
-    formData.append("address", jibunAddress);
+    formData.append("address", roadNameAddress);
     formData.append("cityCode", cityCode);
     formData.append("overview", overview);
     formData.append("latitude", latitude);
     formData.append("longitude", longitude);
-    formData.append("keywordCodes", [firstKeyword, secondKeyword, thirdKeyword]);
+    formData.append("keywordCodes", firstKeyword);
+    formData.append("keywordCodes", secondKeyword);
+    formData.append("keywordCodes", thirdKeyword);
     formData.append("mainImage", mainImgFile);
-    formData.append("images", subImgFile);
+
+    if (subImgFile) {
+      for (let i = 0; i < subImgFile.length; i++) {
+        formData.append("images", subImgFile[i]);
+      }
+    }
 
     setRegistForm(formData);
 
@@ -116,10 +125,13 @@ const Regist = () => {
 
     const fetchData = async () => {
       try {
+        for (const entry of registForm.entries()) {
+          console.log(entry[0], entry[1]);
+        }
         const response = await axios.post("http://localhost/api/admin/attraction", formData, {
           headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImFkbWluIiwibmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzAwNTYyOTc2fQ.9fzPpvuv9r_3VrBB8VN2uJA08PwJ8SuSydQbnUOVkho",
+            Authorization: `Bearer ${loginToken}`,
+            "Content-Type": "multipart/form-data",
           },
         });
 
@@ -132,10 +144,10 @@ const Regist = () => {
     fetchData();
   };
   // 관리자 등록 로직
-  const [type, setType] = useState(-1); // 관광지 타입 (명소, 식당, 숙소)
+  const [type, setType] = useState(1); // 관광지 타입 (명소, 식당, 숙소)
   const [title, setTitle] = useState(""); // 관광지 명
   const [postNumber, setPostNumber] = useState(""); // 우편 번호
-  // const [roadNameAddress, setRoadNameAddress] = useState(""); // 도로명 주소
+  const [roadNameAddress, setRoadNameAddress] = useState(""); // 도로명 주소
   const [jibunAddress, setJibunAddress] = useState(""); // 지번 주소
   const [detailAddress, setDetailAddress] = useState(""); // 상세 주소
   const [extraAddress, setExtraAddress] = useState(""); // 추가 주소
@@ -149,6 +161,9 @@ const Regist = () => {
   const [cityCode, setCityCode] = useState(-1); // 도시 코드
   const [latitude, setLatitude] = useState(-1); // 위도
   const [longitude, setLongitude] = useState(-1); // 경도
+
+  const loginToken = useRecoilValue(loginTokenState);
+
   // 타입 선택 처리
   const handleType = (e) => {
     console.log("선택한 관광지 타입: ", e.target.value);
@@ -171,6 +186,10 @@ const Regist = () => {
     setExtraAddress(e.target.value);
   };
 
+  const handleRoadNameAddress = (e) => {
+    setRoadNameAddress(e.target.value);
+  };
+
   const handleFirstKeyword = (e) => {
     setFirstKeyword(e.target.value);
   };
@@ -188,7 +207,7 @@ const Regist = () => {
   };
 
   const handleSubImgFile = (e) => {
-    setSubImgFile(e.target.files[0]);
+    setSubImgFile(e.target.files);
   };
 
   const handleSubmit = () => {};
@@ -219,7 +238,14 @@ const Regist = () => {
             </div>
 
             <div>
-              {/* <input type="text" value={roadNameAddress} onChange={handleRoadNameAddress} placeholder="도로명주소" readOnly required /> */}
+              <input
+                type="text"
+                value={roadNameAddress || ""}
+                onChange={handleRoadNameAddress}
+                placeholder="도로명주소"
+                readOnly
+                required
+              />
               <input type="text" value={jibunAddress} placeholder="지번주소" readOnly required />
 
               <span id="guide" style={{ color: "#999", display: "none" }}></span>
