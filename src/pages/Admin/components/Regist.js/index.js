@@ -1,4 +1,5 @@
 import "./index.css";
+import { useState } from "react";
 const { kakao, daum } = window;
 
 const Regist = () => {
@@ -37,9 +38,10 @@ const Regist = () => {
   };
 
   //본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
-  function sample4_execDaumPostcode() {
+  const handleFindPostNumber = () => {
     new daum.Postcode({
       oncomplete: function (data) {
+        console.log(data);
         // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
         // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
         // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
@@ -49,12 +51,11 @@ const Regist = () => {
         // 법정동명이 있을 경우 추가한다. (법정리는 제외)
         // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
         if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
-          extraRoadAddr += data.bname;
+          extraRoadAddr += data.bname; // ex 무실동
         }
         // 건물명이 있고, 공동주택일 경우 추가한다.
         if (data.buildingName !== "" && data.apartment === "Y") {
-          extraRoadAddr +=
-            extraRoadAddr !== "" ? ", " + data.buildingName : data.buildingName;
+          extraRoadAddr += extraRoadAddr !== "" ? ", " + data.buildingName : data.buildingName;
         }
         // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
         if (extraRoadAddr !== "") {
@@ -62,16 +63,15 @@ const Regist = () => {
         }
 
         // 우편번호와 주소 정보를 해당 필드에 넣는다.
-        document.getElementById("sample4_postcode").value = data.zonecode;
-        document.getElementById("sample4_roadAddress").value = roadAddr;
-        document.getElementById("sample4_jibunAddress").value =
-          data.jibunAddress;
+        setPostNumber(data.zonecode);
+        setRoadNameAddress(data.roadAddr);
+        setJibunAddress(data.jibunAddress);
 
         // 참고항목 문자열이 있을 경우 해당 필드에 넣는다.
         if (roadAddr !== "") {
-          document.getElementById("sample4_extraAddress").value = extraRoadAddr;
+          setExtraAddress(extraRoadAddr);
         } else {
-          document.getElementById("sample4_extraAddress").value = "";
+          setExtraAddress("");
         }
 
         var guideTextBox = document.getElementById("guide");
@@ -93,7 +93,7 @@ const Regist = () => {
         geocoder.addressSearch(address, callback);
       },
     }).open();
-  }
+  };
 
   let registForm = document.getElementById("registForm");
   console.log(registForm);
@@ -124,181 +124,138 @@ const Regist = () => {
       return response.text();
     });
   };
+  // 관리자 등록 로직
+  const [type, setType] = useState(-1); // 관광지 타입 (명소, 식당, 숙소)
+  const [title, setTitle] = useState(""); // 관광지 명
+  const [postNumber, setPostNumber] = useState(""); // 우편 번호
+  const [roadNameAddress, setRoadNameAddress] = useState(""); // 도로명 주소
+  const [jibunAddress, setJibunAddress] = useState(""); // 지번 주소
+  const [detailAddress, setDetailAddress] = useState(""); // 상세 주소
+  const [extraAddress, setExtraAddress] = useState(""); // 추가 주소
+  // 타입 선택 처리
+  const handleType = (e) => {
+    console.log("선택한 관광지 타입: ", e.target.value);
+    setType(e.target.value);
+  };
+
+  const handleTitle = (e) => {
+    setTitle(e.target.value);
+  };
 
   return (
-    <div className="admin-regist-form">
+    <div className="regist-form">
       <form onsubmit={handleFormSubmit}>
-        <section className="admin-input-content">
-          <input type="hidden" id="latitude" name="latitude" />
-          <input type="hidden" id="longitude" name="longitude" />
-          <input type="hidden" id="cityCode" name="cityCode" />
+        <section className="input-content">
           <h2>관광지 등록</h2>
-          <div className="input-content-wrap">
-            <dl className="inputbox">
-              <dt className="inputbox-title">타입</dt>
-              <dd className="inputbox-content">
-                <div className="select">
-                  <select name="type">
-                    <option value="1">관광지</option>
-                    <option value="2">식당</option>
-                    <option value="3">숙박</option>
-                  </select>
-                </div>
-              </dd>
-            </dl>
-            <dl className="inputbox">
-              <dt className="inputbox-title">명소 명</dt>
-              <dd className="inputbox-content">
-                <input id="input0" type="text" name="title" required />
-                <label htmlFor="input0">명소 명</label>
-                <span className="underline"></span>
-              </dd>
-            </dl>
-            <dl className="inputbox">
-              <input
-                type="text"
-                id="sample4_postcode"
-                placeholder="우편번호"
-                readonly
-                required
-              />
-              <input
-                type="button"
-                onClick={sample4_execDaumPostcode}
-                value="우편번호 찾기"
-              />
-              <br />
-              <input
-                type="text"
-                id="sample4_roadAddress"
-                name="address"
-                placeholder="도로명주소"
-                readonly
-                required
-              />
-              <input
-                type="text"
-                id="sample4_jibunAddress"
-                placeholder="지번주소"
-                readonly
-                required
-              />
-              <span
-                id="guide"
-                style={{ color: "#999", display: "none" }}
-              ></span>
-              <input
-                type="text"
-                id="sample4_detailAddress"
-                placeholder="상세주소"
-              />
-              <input
-                type="text"
-                id="sample4_extraAddress"
-                placeholder="참고항목"
-              />
-            </dl>
-            <dl className="inputbox">
-              <dt className="inputbox-title">설명</dt>
-              <dd className="inputbox-content">
-                <input id="input0" type="text" name="overview" required />
-                <label htmlFor="input0">설명</label>
-                <span className="underline"></span>
-              </dd>
-            </dl>
-            <dl className="inputbox">
-              <dt className="inputbox-title">키워드 1</dt>
-              <dd className="inputbox-content">
-                <div className="select">
-                  <select name="keywordCodes">
-                    <option value="1">바다</option>
-                    <option value="2">산</option>
-                    <option value="3">별</option>
-                    <option value="4">계곡</option>
-                    <option value="5">해수욕장</option>
-                    <option value="6">연못</option>
-                    <option value="7">공원</option>
-                    <option value="8">절</option>
-                    <option value="9">폭포</option>
-                    <option value="10">강</option>
-                    <option value="11">고적지</option>
-                    <option value="13">섬</option>
-                    <option value="15">도시</option>
-                  </select>
-                </div>
-              </dd>
-            </dl>
-            <dl className="inputbox">
-              <dt className="inputbox-title">키워드 2</dt>
-              <dd className="inputbox-content">
-                <div className="select">
-                  <select name="keywordCodes">
-                    <option value="1">바다</option>
-                    <option value="2">산</option>
-                    <option value="3">별</option>
-                    <option value="4">계곡</option>
-                    <option value="5">해수욕장</option>
-                    <option value="6">연못</option>
-                    <option value="7">공원</option>
-                    <option value="8">절</option>
-                    <option value="9">폭포</option>
-                    <option value="10">강</option>
-                    <option value="11">고적지</option>
-                    <option value="13">섬</option>
-                    <option value="15">도시</option>
-                  </select>
-                </div>
-              </dd>
-            </dl>
-            <dl className="inputbox">
-              <dt className="inputbox-title">키워드 3</dt>
-              <dd className="inputbox-content">
-                <div className="select">
-                  <select name="keywordCodes">
-                    <option value="1">바다</option>
-                    <option value="2">산</option>
-                    <option value="3">별</option>
-                    <option value="4">계곡</option>
-                    <option value="5">해수욕장</option>
-                    <option value="6">연못</option>
-                    <option value="7">공원</option>
-                    <option value="8">절</option>
-                    <option value="9">폭포</option>
-                    <option value="10">강</option>
-                    <option value="11">고적지</option>
-                    <option value="13">섬</option>
-                    <option value="15">도시</option>
-                  </select>
-                </div>
-              </dd>
-            </dl>
-            <dl className="inputbox">
-              <dt className="inputbox-title">대표 이미지</dt>
-              <dd className="inputbox-content">
-                <input
-                  id="input0"
-                  type="file"
-                  name="mainImage"
-                  required
-                  accept=".png, .jpg, .jpeg"
-                />
-                <span className="underline"></span>
-              </dd>
-            </dl>
-            <dl className="inputbox">
-              <dt className="inputbox-title">서브 이미지</dt>
-              <dd className="inputbox-content">
-                <input
-                  id="input0"
-                  type="file"
-                  name="images"
-                  multiple
-                  accept=".png, .jpg, .jpeg"
-                />
-                <span class="underline"></span>
-              </dd>
-            </dl>
-            <div className="btns">
+          <div>
+            <p>타입</p>
+            <div>
+              <select onChange={handleType} name="type">
+                <option value="1">관광지</option>
+                <option value="2">식당</option>
+                <option value="3">숙박</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="title">명소 명</label>
+              <input onChange={handleTitle} value={title} id="title" type="text" name="title" required />
+            </div>
+
+            <div>
+              <input type="text" value={postNumber} placeholder="우편번호" readonly required />
+              <input type="button" onClick={handleFindPostNumber} value="우편번호 찾기" />
+            </div>
+
+            <div>
+              <input type="text" value={roadNameAddress} placeholder="도로명주소" readonly required />
+              <input type="text" value={jibunAddress} placeholder="지번주소" readonly required />
+
+              <span id="guide" style={{ color: "#999", display: "none" }}></span>
+
+              <input type="text" value={detailAddress} placeholder="상세주소" />
+              <input type="text" value={extraAddress} placeholder="참고항목" />
+            </div>
+            <div className="inputbox">
+              <label htmlFor="overview">설명 </label>
+              <input id="overview" type="text" name="overview" required />
+            </div>
+            <div>
+              키워드 1
+              <div className="select">
+                <select name="keywordCodes">
+                  <option value="">선택안함</option>
+                  <option value="1">바다</option>
+                  <option value="2">산</option>
+                  <option value="3">별</option>
+                  <option value="4">계곡</option>
+                  <option value="5">해수욕장</option>
+                  <option value="6">연못</option>
+                  <option value="7">공원</option>
+                  <option value="8">절</option>
+                  <option value="9">폭포</option>
+                  <option value="10">강</option>
+                  <option value="11">고적지</option>
+                  <option value="13">섬</option>
+                  <option value="15">도시</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              키워드 2
+              <div className="select">
+                <select name="keywordCodes">
+                  <option value="">선택안함</option>
+                  <option value="1">바다</option>
+                  <option value="2">산</option>
+                  <option value="3">별</option>
+                  <option value="4">계곡</option>
+                  <option value="5">해수욕장</option>
+                  <option value="6">연못</option>
+                  <option value="7">공원</option>
+                  <option value="8">절</option>
+                  <option value="9">폭포</option>
+                  <option value="10">강</option>
+                  <option value="11">고적지</option>
+                  <option value="13">섬</option>
+                  <option value="15">도시</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              키워드 3
+              <div className="select">
+                <select name="keywordCodes">
+                  <option value="">선택안함</option>
+                  <option value="1">바다</option>
+                  <option value="2">산</option>
+                  <option value="3">별</option>
+                  <option value="4">계곡</option>
+                  <option value="5">해수욕장</option>
+                  <option value="6">연못</option>
+                  <option value="7">공원</option>
+                  <option value="8">절</option>
+                  <option value="9">폭포</option>
+                  <option value="10">강</option>
+                  <option value="11">고적지</option>
+                  <option value="13">섬</option>
+                  <option value="15">도시</option>
+                </select>
+              </div>
+            </div>
+            <div className="inputbox">
+              대표 이미지
+              <div className="inputbox-content">
+                <input id="input0" type="file" name="mainImage" required accept=".png, .jpg, .jpeg" />
+              </div>
+            </div>
+            <div className="inputbox">
+              서브 이미지
+              <div className="inputbox-content">
+                <input id="input0" type="file" name="images" multiple accept=".png, .jpg, .jpeg" />
+              </div>
+            </div>
+            <div className="submit-btn-div">
               <button className="btn btn-confirm" type="submit">
                 등록
               </button>
