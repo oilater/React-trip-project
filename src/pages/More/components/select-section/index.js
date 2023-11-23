@@ -234,6 +234,10 @@ const SelectMoreRegion = () => {
     setOpen(true);
   };
 
+  useEffect(() => {
+    console.log(pickedPlacesArr);
+  }, [isSearch]);
+
   // 명소 : DB에 등록 요청
   const registMyPick = async (myPlace) => {
     try {
@@ -268,60 +272,44 @@ const SelectMoreRegion = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(pickedPlacesArr);
-  }, [isSearch]);
-
   // 명소 하트 클릭 시
   const handleClickMyAttraction = (myPlace) => {
     fetchData();
     if (userPickedPlaces.map((v) => v.id).includes(myPlace.id)) {
-      // // 로그인 안한 유저들
-      // const filteredAttractionList = [...myAttrationList].filter(
-      //   (v) => v !== myPlace
-      // );
-      // setMyAttractionList(new Set(filteredAttractionList));
-      // DB에 명소 해제 요청
       deleteMyPick(myPlace);
       fetchData();
     } else {
-      // setMyAttractionList((prev) => new Set([...prev, myPlace]));
-      // DB에 내 PICK 등록 요청
-      registMyPick(myPlace);
+      registMyPick(myPlace); // DB에 내 PICK 등록 요청
       fetchData();
     }
   };
 
   // 식당 하트 클릭 시
   const handleClickMyRestaurant = (myPlace) => {
-    if ([...myRestaurantList].includes(myPlace)) {
-      const filteredRestaurantList = [...myRestaurantList].filter((v) => v !== myPlace);
-      setMyRestaurantList(new Set(filteredRestaurantList));
-      // DB에 명소 해제 요청
-      deleteMyPick(myPlace);
+    fetchData();
+    if (userPickedPlaces.map((v) => v.id).includes(myPlace.id)) {
+      deleteMyPick(myPlace); // DB에 명소 해제 요청
+      fetchData();
     } else {
-      setMyRestaurantList((prev) => new Set([...prev, myPlace]));
-      // DB에 내 PICK 등록 요청
-      registMyPick(myPlace);
+      registMyPick(myPlace); // DB에 내 PICK 등록 요청
+      fetchData();
     }
   };
 
   // 숙소 하트 클릭 시
   const handleClickMyAccomodation = (myPlace) => {
-    if ([...myAccomodationList].includes(myPlace)) {
-      const filteredAccomodationList = [...myAccomodationList].filter((v) => v !== myPlace);
-      setMyAccomodationList(new Set(filteredAccomodationList));
-      // DB에 명소 해제 요청
-      deleteMyPick(myPlace);
+    fetchData();
+    if (userPickedPlaces.map((v) => v.id).includes(myPlace.id)) {
+      deleteMyPick(myPlace); // DB에 명소 해제 요청
+      fetchData();
     } else {
-      setMyAccomodationList((prev) => new Set([...prev, myPlace]));
-      // DB에 내 PICK 등록 요청
-      registMyPick(myPlace);
+      registMyPick(myPlace); // DB에 내 PICK 등록 요청
+      fetchData();
     }
   };
 
   useEffect(() => {
-    console.log("광광지 상세 보기 실행", detailInfo);
+    console.log("관광지 상세 보기 실행", detailInfo);
   }, [detailInfo]);
 
   const items = [

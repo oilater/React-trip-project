@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loginState } from "../../../../../atoms/login";
 import { loginedUserState } from "../../../../../atoms/login";
-
+import { loginTokenState } from "../../../../../atoms/login";
 import SnsLink from "./sns-img";
 import Modal from "../../login/modal";
 import { Dropdown } from "antd";
@@ -10,16 +10,20 @@ import { Dropdown } from "antd";
 const Nav = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isLogin, setIsLogin] = useRecoilState(loginState);
-  const loginedUser = useRecoilValue(loginedUserState);
+  const [loginToken, setLoginToken] = useRecoilState(loginTokenState);
+  const [loginedUser, setLoginedUser] = useRecoilState(loginedUserState);
 
   const handleLogout = () => {
     setIsLogin(false);
+    // localStorage.removeItem("accessToken");
+    setLoginToken("");
+    setLoginedUser({});
   };
 
   const items = [
     {
       key: "1",
-      label: <p>{loginedUser.id}님 환영해요 :)</p>,
+      label: <p>{loginedUser.name}님 환영해요 :)</p>,
     },
     {
       key: "2",
@@ -51,7 +55,7 @@ const Nav = () => {
           <SnsLink url="https://www.baemin.com/_next/static/media/iconBlog.185b2ac8.png" alt="블로그 바로가기" />
           <SnsLink url="https://www.baemin.com/_next/static/media/iconYoutube.8ab1feea.png" alt="유튜브 바로가기" />
 
-          {!isLogin ? (
+          {!loginToken ? (
             <button
               className="login-btn"
               onClick={() => {

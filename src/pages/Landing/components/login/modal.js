@@ -74,14 +74,12 @@ const Modal = ({ closeModal }) => {
         pw: userPassword,
       };
 
-      const response = await axios.post(
-        "http://localhost/api/user/login",
-        loginData
-      );
+      const response = await axios.post("http://localhost/api/user/login", loginData);
 
       console.log(response.data.token);
       const token = response.data.token; // 서버로부터 받아온 토큰 키 저장
-      setLoginToken(response.data.token); // 토큰 키 recoilState에 세팅
+      setLoginToken(token);
+      localStorage.setItem("accessToken", token);
       setIsLogin(true); // 로그인 상태 true
       closeModal(false); // 모달 창 닫기
 
@@ -104,10 +102,7 @@ const Modal = ({ closeModal }) => {
         email: signupEmail,
       };
 
-      const response = await axios.post(
-        "http://localhost/api/user",
-        signupData
-      );
+      const response = await axios.post("http://localhost/api/user", signupData);
       console.log("회원가입 유저 정보", response);
       setAction("login");
     } catch (error) {
@@ -119,7 +114,7 @@ const Modal = ({ closeModal }) => {
     if (loginedUser && loginedUser.role === "admin") {
       navigate("/admin", { state: admin });
     }
-  }, [loginedUser]);
+  }, [admin, loginedUser, navigate]);
 
   return (
     <div className="modal-background">
@@ -139,21 +134,11 @@ const Modal = ({ closeModal }) => {
             <>
               <div className="input">
                 <img src={userIcon} alt="유저 아이디 아이콘" />
-                <input
-                  onChange={handleUserId}
-                  value={userId}
-                  type="text"
-                  placeholder="아이디"
-                />
+                <input onChange={handleUserId} value={userId} type="text" placeholder="아이디" />
               </div>
               <div className="input">
                 <img src={passwordIcon} alt="비밀번호 아이콘" />
-                <input
-                  onChange={handleUserPassword}
-                  value={userPassword}
-                  type="password"
-                  placeholder="비밀번호"
-                />
+                <input onChange={handleUserPassword} value={userPassword} type="password" placeholder="비밀번호" />
               </div>
             </>
           ) : (
@@ -161,39 +146,19 @@ const Modal = ({ closeModal }) => {
             <>
               <div className="input">
                 <img src={userIcon} alt="유저 이름" />
-                <input
-                  onChange={handleSignupName}
-                  value={signupName}
-                  type="text"
-                  placeholder="이름"
-                />
+                <input onChange={handleSignupName} value={signupName} type="text" placeholder="이름" />
               </div>
               <div className="input">
                 <img src={userIcon} alt="유저 아이디 아이콘" />
-                <input
-                  onChange={handleSignupId}
-                  value={signupId}
-                  type="text"
-                  placeholder="아이디"
-                />
+                <input onChange={handleSignupId} value={signupId} type="text" placeholder="아이디" />
               </div>
               <div className="input">
                 <img src={passwordIcon} alt="비밀번호 아이콘" />
-                <input
-                  onChange={handleSignupPassword}
-                  value={signupPassword}
-                  type="password"
-                  placeholder="비밀번호"
-                />
+                <input onChange={handleSignupPassword} value={signupPassword} type="password" placeholder="비밀번호" />
               </div>
               <div className="input">
                 <img src={emailIcon} alt="이메일 아이콘" />
-                <input
-                  onChange={handleSignupEmail}
-                  value={signupEmail}
-                  type="email"
-                  placeholder="이메일"
-                />
+                <input onChange={handleSignupEmail} value={signupEmail} type="email" placeholder="이메일" />
               </div>
             </>
           )}
