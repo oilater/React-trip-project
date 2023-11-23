@@ -1,6 +1,6 @@
 import "./index.css";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { loginTokenState } from "../../../../atoms/login";
 const { kakao, daum } = window;
@@ -45,6 +45,7 @@ const Regist = () => {
         // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
         // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
         var roadAddr = data.roadAddress; // 도로명 주소 변수
+
         var extraRoadAddr = ""; // 참고 항목 변수
 
         // 법정동명이 있을 경우 추가한다. (법정리는 제외)
@@ -64,6 +65,7 @@ const Regist = () => {
         // 우편번호와 주소 정보를 해당 필드에 넣는다.
         setPostNumber(data.zonecode);
         setRoadNameAddress(roadAddr);
+        console.log(roadNameAddress);
         setJibunAddress(data.jibunAddress);
 
         // 참고항목 문자열이 있을 경우 해당 필드에 넣는다.
@@ -87,10 +89,6 @@ const Regist = () => {
           guideTextBox.innerHTML = "";
           guideTextBox.style.display = "none";
         }
-
-        const address = roadNameAddress;
-        console.log(address);
-        geocoder.addressSearch(address, callback);
       },
     }).open();
   };
@@ -164,6 +162,13 @@ const Regist = () => {
 
   const loginToken = useRecoilValue(loginTokenState);
 
+  useEffect(() => {
+    const address = roadNameAddress;
+    console.log("address:::: ", address);
+
+    address && geocoder.addressSearch(address, callback);
+  }, [roadNameAddress]);
+
   // 타입 선택 처리
   const handleType = (e) => {
     console.log("선택한 관광지 타입: ", e.target.value);
@@ -213,12 +218,14 @@ const Regist = () => {
   const handleSubmit = () => {};
 
   return (
-    <div className="regist-form">
+    <div className="regist-section">
       <form onSubmit={handleFormSubmit}>
-        <section className="input-content">
+        <section className="admin-input">
           <h2>관광지 등록</h2>
-          <div>
-            <p>타입</p>
+          <div className="type-section">
+            <div>
+              <p>타입</p>
+            </div>
             <div>
               <select onChange={handleType} name="type">
                 <option value="1">관광지</option>

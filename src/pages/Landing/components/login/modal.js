@@ -79,7 +79,7 @@ const Modal = ({ closeModal }) => {
       console.log(response.data.token);
       const token = response.data.token; // 서버로부터 받아온 토큰 키 저장
       setLoginToken(token);
-      localStorage.setItem("accessToken", token);
+      // localStorage.setItem("accessToken", token);
       setIsLogin(true); // 로그인 상태 true
       closeModal(false); // 모달 창 닫기
 

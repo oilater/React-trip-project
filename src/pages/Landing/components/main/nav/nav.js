@@ -16,7 +16,7 @@ const Nav = () => {
   const handleLogout = () => {
     setIsLogin(false);
     // localStorage.removeItem("accessToken");
-    setLoginToken("");
+    setLoginToken(null);
     setLoginedUser({});
   };
 

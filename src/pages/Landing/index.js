@@ -10,11 +10,11 @@ import { loginedUserState } from "../../atoms/login";
 const Landing = () => {
   const [loginToken, setLoginToken] = useRecoilState(loginTokenState);
   const loginedUser = useRecoilValue(loginedUserState);
-  // 새로고침 되어도 로그인 유지
-  useEffect(() => {
-    const storedToken = localStorage.getItem("accessToken");
-    if (storedToken) setLoginToken(storedToken);
-  }, [setLoginToken]);
+  // // 새로고침 되어도 로그인 유지
+  // useEffect(() => {
+  //   const storedToken = localStorage.getItem("accessToken");
+  //   if (storedToken) setLoginToken(storedToken);
+  // }, [setLoginToken]);
 
   useEffect(() => {
     console.log(loginedUser);
