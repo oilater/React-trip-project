@@ -19,7 +19,7 @@ const Nav = () => {
   const items = [
     {
       key: "1",
-      label: <p>{loginedUser.name}님 환영해요 :)</p>,
+      label: <p>{loginedUser.id}님 환영해요 :)</p>,
     },
     {
       key: "2",
@@ -43,22 +43,13 @@ const Nav = () => {
       </div>
       <div className="nav-sns">
         <ul className="sns-icon-links">
-          <SnsLink
-            url="https://www.baemin.com/_next/static/media/iconFacebook.381c8e36.png"
-            alt="페이스북 바로가기"
-          />
+          <SnsLink url="https://www.baemin.com/_next/static/media/iconFacebook.381c8e36.png" alt="페이스북 바로가기" />
           <SnsLink
             url="https://www.baemin.com/_next/static/media/iconInstagram.59132ce6.png"
             alt="인스타그램 바로가기"
           />
-          <SnsLink
-            url="https://www.baemin.com/_next/static/media/iconBlog.185b2ac8.png"
-            alt="블로그 바로가기"
-          />
-          <SnsLink
-            url="https://www.baemin.com/_next/static/media/iconYoutube.8ab1feea.png"
-            alt="유튜브 바로가기"
-          />
+          <SnsLink url="https://www.baemin.com/_next/static/media/iconBlog.185b2ac8.png" alt="블로그 바로가기" />
+          <SnsLink url="https://www.baemin.com/_next/static/media/iconYoutube.8ab1feea.png" alt="유튜브 바로가기" />
 
           {!isLogin ? (
             <button

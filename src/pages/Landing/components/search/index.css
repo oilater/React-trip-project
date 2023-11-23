@@ -133,8 +133,19 @@
 
 /* recommand section */
 .recommand-title {
-    padding: 3rem;
+    margin: 0 auto;
+    padding: 7rem 3rem;
     font-size: 1.3rem;
+}
+
+.mypick-title {
+    padding-top: 1rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.mypick-title span {
+    color: rgb(17, 122, 226);
 }
 
 .slider-style {
@@ -198,7 +209,6 @@
     position: inherit;
     padding: 5rem;
 }
-
 
 /* 슬라이더 */
 .container {

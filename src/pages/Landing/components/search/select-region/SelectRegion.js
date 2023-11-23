@@ -131,6 +131,7 @@ const SelectRegion = () => {
                 width: 50,
                 height: 50,
                 backgroundColor: "dodgerblue",
+                transition: "background-color 0.6s ease",
               }}
               type="primary"
               shape="circle"
