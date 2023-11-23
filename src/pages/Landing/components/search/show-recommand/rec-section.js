@@ -55,9 +55,7 @@ const Recommand = () => {
   const keywordArr = Array.from(keywordValue); // 선택한 keyword를 서버로 넘기기 위해 keyword Set을 배열로 변환
   // console.log(keywordArr);
   // keywordCodes 쿼리 생성
-  const keywordQueryString = keywordArr
-    .map((keyword) => `keywordCodes=${encodeURIComponent(keyword.code)}`)
-    .join("&");
+  const keywordQueryString = keywordArr.map((keyword) => `keywordCodes=${encodeURIComponent(keyword.code)}`).join("&");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -97,7 +95,7 @@ const Recommand = () => {
           <div className="recommand-title"></div>
           <div className="container">
             <Swiper
-              // effect={"coverflow"}
+              effect={"coverflow"}
               grabCursor={false}
               centeredSlides={true}
               loop={true}
@@ -119,11 +117,7 @@ const Recommand = () => {
               className="swiper_container"
             >
               {recommandList.map((v) => (
-                <SwiperSlide
-                  key={v.id}
-                  onClick={() => handleClickPlace(v)}
-                  style={{ cursor: "pointer" }}
-                >
+                <SwiperSlide key={v.id} onClick={() => handleClickPlace(v)} style={{ cursor: "pointer" }}>
                   <div className="img-wrapper">
                     <img src={v.mainImagePath} alt="추천 여행지 사진" />
                     <div className="img-info-section">
@@ -223,19 +217,11 @@ const Recommand = () => {
           }}
           tooltip={
             <div>
-              <p>
-                여행지를 클릭한 후, PICK 버튼을 눌러 즐겨찾기를 설정할 수
-                있어요.
-              </p>
+              <p>여행지를 클릭한 후, PICK 버튼을 눌러 즐겨찾기를 설정할 수 있어요.</p>
               <br />
-              <p>
-                '마이페이지 &gt; 내가 PICK한 여행지'에서 확인하실 수 있어요.
-              </p>
+              <p>'마이페이지 &gt; 내가 PICK한 여행지'에서 확인하실 수 있어요.</p>
               <br />
-              <p>
-                '다른 여행지도 볼래요' 버튼을 누르면 지역 내의 다른 여행지들도
-                보실 수 있어요!
-              </p>
+              <p>'다른 여행지도 볼래요' 버튼을 누르면 지역 내의 다른 여행지들도 보실 수 있어요!</p>
             </div>
           }
         />

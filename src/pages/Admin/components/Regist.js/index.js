@@ -75,20 +75,20 @@ const Regist = () => {
           setExtraAddress("");
         }
 
-        var guideTextBox = document.getElementById("guide");
-        // 사용자가 '선택 안함'을 클릭한 경우, 예상 주소라는 표시를 해준다.
-        if (data.autoRoadAddress) {
-          var expRoadAddr = data.autoRoadAddress + extraRoadAddr;
-          guideTextBox.innerHTML = "(예상 도로명 주소 : " + expRoadAddr + ")";
-          guideTextBox.style.display = "block";
-        } else if (data.autoJibunAddress) {
-          var expJibunAddr = data.autoJibunAddress;
-          guideTextBox.innerHTML = "(예상 지번 주소 : " + expJibunAddr + ")";
-          guideTextBox.style.display = "block";
-        } else {
-          guideTextBox.innerHTML = "";
-          guideTextBox.style.display = "none";
-        }
+        // var guideTextBox = document.getElementById("guide");
+        // // 사용자가 '선택 안함'을 클릭한 경우, 예상 주소라는 표시를 해준다.
+        // if (data.autoRoadAddress) {
+        //   var expRoadAddr = data.autoRoadAddress + extraRoadAddr;
+        //   guideTextBox.innerHTML = "(예상 도로명 주소 : " + expRoadAddr + ")";
+        //   guideTextBox.style.display = "block";
+        // } else if (data.autoJibunAddress) {
+        //   var expJibunAddr = data.autoJibunAddress;
+        //   guideTextBox.innerHTML = "(예상 지번 주소 : " + expJibunAddr + ")";
+        //   guideTextBox.style.display = "block";
+        // } else {
+        //   guideTextBox.innerHTML = "";
+        //   guideTextBox.style.display = "none";
+        // }
       },
     }).open();
   };
@@ -219,134 +219,167 @@ const Regist = () => {
 
   return (
     <div className="regist-section">
-      <form onSubmit={handleFormSubmit}>
-        <section className="admin-input">
-          <h2>관광지 등록</h2>
-          <div className="type-section">
-            <div>
-              <p>타입</p>
-            </div>
-            <div>
-              <select onChange={handleType} name="type">
-                <option value="1">관광지</option>
-                <option value="2">식당</option>
-                <option value="3">숙박</option>
-              </select>
-            </div>
+      <div className="admin-title">명소 등록</div>
+      <hr />
+      <form className="regist-form" onSubmit={handleFormSubmit}>
+        <div className="input-section">
+          <p>명소 분류</p>
+          <select className="select" onChange={handleType} name="type">
+            <option value="1">관광지</option>
+            <option value="2">식당</option>
+            <option value="3">숙박</option>
+          </select>
+        </div>
 
-            <div>
-              <label htmlFor="title">명소 명</label>
-              <input onChange={handleTitle} value={title} id="title" type="text" name="title" required />
-            </div>
+        <div className="input-section">
+          <p>명소 이름</p>
+          <input
+            className="input-bar"
+            onChange={handleTitle}
+            value={title}
+            id="title"
+            type="text"
+            name="title"
+            required
+          />
+        </div>
 
-            <div>
-              <input type="text" value={postNumber} placeholder="우편번호" readOnly required />
-              <input type="button" onClick={handleFindPostNumber} value="우편번호 찾기" />
-            </div>
+        <div className="input-section">
+          <p>명소 위치</p>
+          <input className="input-bar" type="text" value={postNumber} placeholder="우편번호" readOnly required />
+          <input className="find-post-btn" type="button" onClick={handleFindPostNumber} value="우편번호 찾기" />
+        </div>
 
-            <div>
-              <input
-                type="text"
-                value={roadNameAddress || ""}
-                onChange={handleRoadNameAddress}
-                placeholder="도로명주소"
-                readOnly
-                required
-              />
-              <input type="text" value={jibunAddress} placeholder="지번주소" readOnly required />
+        <div className="input-section address-section">
+          <input
+            className="input-bar"
+            type="text"
+            value={roadNameAddress || ""}
+            onChange={handleRoadNameAddress}
+            placeholder="주소"
+            readOnly
+            required
+          />
+          {/* <input className="input-bar" type="text" value={jibunAddress} placeholder="지번주소" readOnly required /> */}
 
-              <span id="guide" style={{ color: "#999", display: "none" }}></span>
+          <span id="guide" style={{ color: "#999", display: "none" }}></span>
 
-              <input type="text" value={detailAddress} onChange={handleDetailAddress} placeholder="상세주소" />
-              <input type="text" value={extraAddress} onChange={handleExtraAddress} placeholder="참고항목" />
-            </div>
-            <div className="inputbox">
-              <label htmlFor="overview">설명 </label>
-              <input value={overview} onChange={handleOverview} id="overview" type="text" name="overview" required />
-            </div>
-            <div>
-              키워드 1
-              <div className="select">
-                <select onChange={handleFirstKeyword} name="keywordCodes">
-                  <option value="">선택안함</option>
-                  <option value="1">바다</option>
-                  <option value="2">산</option>
-                  <option value="3">별</option>
-                  <option value="4">계곡</option>
-                  <option value="5">해수욕장</option>
-                  <option value="6">연못</option>
-                  <option value="7">공원</option>
-                  <option value="8">절</option>
-                  <option value="9">폭포</option>
-                  <option value="10">강</option>
-                  <option value="11">고적지</option>
-                  <option value="13">섬</option>
-                  <option value="15">도시</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              키워드 2
-              <div className="select">
-                <select onChange={handleSecondKeyword} name="keywordCodes">
-                  <option value="">선택안함</option>
-                  <option value="1">바다</option>
-                  <option value="2">산</option>
-                  <option value="3">별</option>
-                  <option value="4">계곡</option>
-                  <option value="5">해수욕장</option>
-                  <option value="6">연못</option>
-                  <option value="7">공원</option>
-                  <option value="8">절</option>
-                  <option value="9">폭포</option>
-                  <option value="10">강</option>
-                  <option value="11">고적지</option>
-                  <option value="13">섬</option>
-                  <option value="15">도시</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              키워드 3
-              <div className="select">
-                <select onChange={handleThirdKeyword} name="keywordCodes">
-                  <option value="">선택안함</option>
-                  <option value="1">바다</option>
-                  <option value="2">산</option>
-                  <option value="3">별</option>
-                  <option value="4">계곡</option>
-                  <option value="5">해수욕장</option>
-                  <option value="6">연못</option>
-                  <option value="7">공원</option>
-                  <option value="8">절</option>
-                  <option value="9">폭포</option>
-                  <option value="10">강</option>
-                  <option value="11">고적지</option>
-                  <option value="13">섬</option>
-                  <option value="15">도시</option>
-                </select>
-              </div>
-            </div>
-            <div className="main-img-div">
-              대표 이미지
-              <div className="inputbox-content">
-                <input type="file" onChange={handleMainImgFile} required accept=".png, .jpg, .jpeg" />
-              </div>
-            </div>
-            <div className="sub-img-div">
-              서브 이미지
-              <div className="inputbox-content">
-                <input onChange={handleSubImgFile} type="file" name="images" multiple accept=".png, .jpg, .jpeg" />
-              </div>
-            </div>
-            <div className="submit-btn-div">
-              <button onClick={handleSubmit} className="btn btn-confirm" type="submit">
-                등록
-              </button>
-              <button className="btn btn-cancel">Cancel</button>
-            </div>
+          <input
+            className="input-bar"
+            type="text"
+            value={detailAddress}
+            onChange={handleDetailAddress}
+            placeholder="상세주소를 입력하세요"
+          />
+          <input
+            className="input-bar"
+            type="text"
+            value={extraAddress}
+            onChange={handleExtraAddress}
+            placeholder="비고"
+          />
+        </div>
+        <div className="input-section description-section">
+          <p>명소 설명 </p>
+          <textarea
+            className="input-bar"
+            value={overview}
+            onChange={handleOverview}
+            id="overview"
+            type="text"
+            name="overview"
+            required
+          />
+        </div>
+        <div className="input-section">
+          <p>키워드 1</p>
+          <div>
+            <select className="select select-fist-keyword" onChange={handleFirstKeyword} name="keywordCodes">
+              <option value="">선택안함</option>
+              <option value="1">바다</option>
+              <option value="2">산</option>
+              <option value="3">별</option>
+              <option value="4">계곡</option>
+              <option value="5">해수욕장</option>
+              <option value="6">연못</option>
+              <option value="7">공원</option>
+              <option value="8">절</option>
+              <option value="9">폭포</option>
+              <option value="10">강</option>
+              <option value="11">고적지</option>
+              <option value="13">섬</option>
+              <option value="15">도시</option>
+            </select>
           </div>
-        </section>
+        </div>
+        <div className="input-section">
+          <p>키워드 2</p>
+          <div>
+            <select className="select" onChange={handleFirstKeyword} name="keywordCodes">
+              <option value="">선택안함</option>
+              <option value="1">바다</option>
+              <option value="2">산</option>
+              <option value="3">별</option>
+              <option value="4">계곡</option>
+              <option value="5">해수욕장</option>
+              <option value="6">연못</option>
+              <option value="7">공원</option>
+              <option value="8">절</option>
+              <option value="9">폭포</option>
+              <option value="10">강</option>
+              <option value="11">고적지</option>
+              <option value="13">섬</option>
+              <option value="15">도시</option>
+            </select>
+          </div>
+        </div>
+        <div className="input-section">
+          <p>키워드 3</p>
+          <div>
+            <select className="select" onChange={handleFirstKeyword} name="keywordCodes">
+              <option value="">선택안함</option>
+              <option value="1">바다</option>
+              <option value="2">산</option>
+              <option value="3">별</option>
+              <option value="4">계곡</option>
+              <option value="5">해수욕장</option>
+              <option value="6">연못</option>
+              <option value="7">공원</option>
+              <option value="8">절</option>
+              <option value="9">폭포</option>
+              <option value="10">강</option>
+              <option value="11">고적지</option>
+              <option value="13">섬</option>
+              <option value="15">도시</option>
+            </select>
+          </div>
+        </div>
+        <div className="input-section file-section">
+          대표 이미지
+          {/* <div className="regist-img-btn"> */}
+          <input className="files" type="file" onChange={handleMainImgFile} required accept=".png, .jpg, .jpeg" />
+          {/* </div> */}
+        </div>
+        <div className="input-section file-section">
+          서브 이미지
+          {/* <div className="regist-img-btn"> */}
+          <input
+            className="files"
+            onChange={handleSubImgFile}
+            type="file"
+            name="images"
+            multiple
+            accept=".png, .jpg, .jpeg"
+          />
+          {/* </div> */}
+        </div>
+        <div className="submit-section">
+          <button className="submit-btn submit" onClick={handleSubmit} type="submit">
+            등록
+          </button>
+          <div className="center"></div>
+          <button className="submit-btn cancel">Cancel</button>
+        </div>
       </form>
     </div>
   );

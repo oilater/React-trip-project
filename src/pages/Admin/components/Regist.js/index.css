@@ -1,10 +1,167 @@
+.regist-form {
+    margin-left: 1rem;
+}
 .regist-section {
-    padding-top: 4rem;
+    padding-top: 3rem;
     max-width: 1240px;
     margin: 0 auto;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: rgb(39, 39, 39);
 }
 
-.type-section {
+.regist-section hr {
+    margin-bottom: 4rem;
+}
+
+.input-section {
     display: flex;
-    
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 2.2rem;
+}
+
+.admin-title {
+    color: rgb(0, 65, 131);
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.regist-section hr {
+    height: 0.1rem;
+    background-color: rgb(0, 65, 131);
+}
+
+/* 장소 분류 */
+.place-type {
+    display: flex;
+}
+
+.select {
+    border-style: none;
+    background-color: rgb(247, 247, 247);
+    text-align: center;
+    width: 15rem;
+    height: 2.1rem;
+    margin-left: 3rem;
+    border-radius: 0.9rem;
+}
+
+.input-bar {
+    border-style: none;
+    background-color: rgb(247, 247, 247);
+    text-align: center;
+    width: 15rem;
+    height: 2rem;
+    margin-left: 2.8rem;
+    border-radius: 0.9rem;
+}
+
+.find-post-btn {
+    margin-left: 1rem;
+    width: 7rem;
+    height: 2.1rem;
+    border-radius: 0.9rem;
+    border-style: none;
+    background-color: rgb(0, 101, 202);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.address-section .input-bar {
+    margin-left: 1rem;
+    background-color: rgb(245, 245, 245);
+    border-style: none;
+    border-radius: 0.7rem;
+}
+
+.address-section .input-bar:first-child {
+    margin-left: 7.8rem;
+    width: 18rem;
+   
+}
+
+.description-section {
+    margin-top: 2.2rem;
+}
+
+.description-section .input-bar {
+    width: 64%;
+    height: 10rem;
+    text-align: start;
+    padding: 0.5rem;
+}
+
+.select-fist-keyword {
+    margin-left: 3.3rem;
+}
+
+/* 등록 이미지 버튼 */
+.file-section {
+    margin-top: 2.8rem;
+    position: relative;
+}
+.regist-img-btn input{
+    position: absolute;
+    opacity: 0;
+    right: 0;
+    top: 0;
+}
+
+.regist-img-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 1rem;
+    width: 7rem;
+    height: 2.1rem;
+    border-radius: 0.9rem;
+    border-style: none;
+    background-color: rgb(0, 101, 202);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+
+/* 제출 버튼 */
+.submit-section {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 4rem;
+    margin-bottom: 3rem;
+}
+
+.submit-btn {
+    width: 7rem;
+    height: 2.4rem;
+    border-radius: 0.9rem;
+    border: 1px solid rgb(0, 101, 202);
+    background-color: white;
+
+    color: rgb(0, 101, 202);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.submit {
+    bottom: 2rem;
+    right: 45rem;
+}
+
+.cancel {
+    bottom: 2rem;
+    right: 37rem;
+}
+
+.center {
+    width: 2rem;
+}
+
+.files {
+    margin-left: 2.5rem;
 }

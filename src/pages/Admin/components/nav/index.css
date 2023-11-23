@@ -1,5 +1,25 @@
+
+
+.go-main-btn {
+    margin-left: 1rem;
+    width: 7rem;
+    height: 2.1rem;
+    border-radius: 0.9rem;
+    border-style: none;
+    background-color: rgb(0, 101, 202);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    position: absolute;
+    top: 2.3%;
+    right: 15%;
+}
+
 .admin-logo {
-    width: 5rem;
+    color: rgb(0, 65, 131);
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .admin-nav {
@@ -22,11 +42,11 @@
     justify-content: space-between;
 }
 .admin-nav-menu li {
-    width: 5rem;
+    width: 10rem;
     height: 100%;
 }
 
 .admin-nav-menu li:first-child {
-    width: 10rem;
+    width: 17rem;
     height: 100%;
 }

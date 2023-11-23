@@ -48,7 +48,7 @@ const SubPage = () => {
     <div id="sub" className="sub-page">
       <div className="wrap">
         <div className="recommand-wrapper">
-          <div className="recommand-title">
+          <div className="recommand-place-title">
             {loginToken && myPlaceList.length !== 0 && (
               <p className="mypick-title">
                 <span>{loginedUser.name}님</span>이 찜한 여행지들이에요 :)

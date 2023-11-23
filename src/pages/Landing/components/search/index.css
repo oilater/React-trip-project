@@ -134,7 +134,7 @@
 /* recommand section */
 .recommand-title {
     margin: 0 auto;
-    padding: 7rem 3rem;
+    padding: 1.5rem 3rem;
     font-size: 1.3rem;
 }
 
@@ -170,7 +170,7 @@
     cursor: pointer;
     text-decoration: underline;
 }
-search-and-pick
+
 
 .slider-style {
     padding-top: 1rem;
@@ -296,7 +296,7 @@ search-and-pick
 }
 
 .swiper_container {
-  height: 33rem;
+  height: 35rem;
   padding: 1rem 0;
   position: relative;
 }
@@ -408,4 +408,10 @@ color: #fff;
 line-height: 160px;
 text-align: center;
 margin: 0 auto;
+}
+
+.recommand-place-title {
+    margin: 0 auto;
+    padding: 7rem 3rem;
+    font-size: 1.3rem;
 }
