@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link } from "react-scroll";
 import { Button, FloatButton, Modal, Carousel } from "antd";
 import { useRecoilValue } from "recoil";
 import { loginTokenState } from "../../../../atoms/login";
+import { loginState } from "../../../../atoms/login";
 import { loginedUserState } from "../../../../atoms/login";
 import AnimatedPage from "../../../../animations/AnimatedPage";
 // import Swiper core and required modules
@@ -19,6 +20,7 @@ import "../search/index.css";
 const SubPage = () => {
   const loginToken = useRecoilValue(loginTokenState);
   const loginedUser = useRecoilValue(loginedUserState);
+  const isLogin = useRecoilValue(loginState);
   const [open, setOpen] = useState(false);
   const [myPlaceList, setMyPlaceList] = useState([]);
 
@@ -50,11 +52,22 @@ const SubPage = () => {
       <div className="wrap">
         <div className="recommand-wrapper">
           <div className="recommand-title">
-            <p className="mypick-title">
-              <span>{loginedUser.id}님</span>이 찜한 여행지들이에요 :)
-            </p>
+            {isLogin && myPlaceList.length !== 0 && (
+              <p className="mypick-title">
+                <span>{loginedUser.id}님</span>이 찜한 여행지들이에요 :)
+              </p>
+            )}
           </div>
           <div className="container">
+            {isLogin && myPlaceList.length === 0 && (
+              <div className="when-no-mypick">
+                앗, 아직 <span className="my-pick-places">찜한 여행지</span>가 없네요! &nbsp;
+                <Link to="search" spy={true} smooth={true} offset={0} duration={1400}>
+                  <span className="search-and-pick">여행지를 검색</span>
+                </Link>
+                해서 <span className="my-heart">하트</span>를 눌러보세요.
+              </div>
+            )}
             <Swiper
               effect={"coverflow"}
               grabCursor={false}

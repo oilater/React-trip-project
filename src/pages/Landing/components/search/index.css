@@ -148,6 +148,30 @@
     color: rgb(17, 122, 226);
 }
 
+/* 찜한 여행지가 없을 때 */
+.when-no-mypick {
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    font-size: 1.5rem;
+    color: rgb(180, 180, 180);
+}
+
+.when-no-mypick .my-pick-places {
+    color: rgb(116, 186, 210);
+}
+
+.when-no-mypick .my-heart {
+    color: rgb(255, 91, 91);
+}
+
+.when-no-mypick .search-and-pick {
+    color: rgb(123, 189, 255);
+    cursor: pointer;
+    text-decoration: underline;
+}
+search-and-pick
+
 .slider-style {
     padding-top: 1rem;
     height: 600px;
