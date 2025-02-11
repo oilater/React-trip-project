@@ -10,7 +10,7 @@
 ### 3. 기술 및 환경
 React, Recoil, Javascript, CSS3, git, github
 
-### 4. 시연 영상 링크
+### 4. 프로젝트 시연 영상
 https://youtu.be/Xh6fS-X5AJ4
 
 ### 5. 페이지 소개
